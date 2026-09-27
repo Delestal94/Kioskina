@@ -4,7 +4,7 @@
 
 | Necesidad | Requisito | Regla/ADR | Implementación | Prueba | Estado |
 |---|---|---|---|---|---|
-| Uso sencillo y accesible | RF-002, RF-054, RF-060, RF-063 | Principios UX; RNF-007, RNF-010 | No iniciada | T-A11Y-001 | Propuesta sin validación de campo |
+| Uso sencillo y accesible | RF-002, RF-054, RF-060, RF-063 | Principios UX; RNF-007, RNF-010 | Spike visual: venta como foco y herramientas técnicas plegables; sin validación con usuarios | T-A11Y-001; T-UX-001 (spike) | Propuesta sin validación de campo; prueba táctil/lector y ventana móvil pendientes |
 | Escalar desde un kiosco hasta una organización multinacional | RF-029, RF-036 | Arquitectura candidata; ADR-0001 | No iniciada | T-TENANT-001; pruebas futuras de escala | Visión evolutiva |
 | Digitalizar comercios que usan papel o sistemas obsoletos | Pendiente | Pendiente | No iniciada | No definida | Hipótesis por validar |
 | Comercializar el producto a terceros | Pendiente | Pendiente | No iniciada | No definida | Confirmado como intención |

@@ -182,45 +182,32 @@ export function App({ config }: { config: ClientConfiguration }) {
           {connection === "offline"
             ? "Sin conexión de red"
             : coordinator === "checking"
-              ? "Verificando coordinador…"
+              ? "Comprobando conexión…"
               : coordinator === "available"
-                ? "Coordinador disponible"
-                : "Coordinador no disponible"}
+                ? "Conectado"
+                : "Sin conexión al servidor"}
         </div>
       </header>
 
       <section className="page-heading" id="inicio">
-        <p className="eyebrow">Espacio de trabajo</p>
-        <h1>Estado del dispositivo</h1>
-        <p className="muted">Actividad local y sincronización.</p>
+        <p className="eyebrow">Punto de venta</p>
+        <h1>Nueva venta</h1>
+        <p className="muted">Prueba local con datos sintéticos.</p>
       </section>
 
-      <section className="status-grid" aria-label="Estado del dispositivo">
-        <article className="status-card">
-          <span className="status-label">Eventos pendientes</span>
-          <strong className="status-value">{pendingCount}</strong>
-          <span className="status-caption">Guardados en este dispositivo</span>
-        </article>
-        <article className="status-card">
-          <span className="status-label">Sucursal</span>
-          <strong className="status-id">{config.branchId}</strong>
-          <span className="status-caption">Configurada para este dispositivo</span>
-        </article>
-        <article className="status-card">
-          <span className="status-label">Dispositivo</span>
-          <strong className="status-id">{config.deviceId}</strong>
-          <span className="status-caption">Identificador configurado</span>
-        </article>
+      <section className="status-strip" aria-label="Estado de la caja">
+        <span className="status-counter"><strong>{pendingCount}</strong> pendientes en este dispositivo</span>
+        <span className="status-context">{config.branchId} · {config.deviceId}</span>
       </section>
 
       <section className="panel sale-panel" aria-labelledby="sale-title">
         <div className="panel-heading">
           <div>
-            <p className="eyebrow">Spike descartable · datos sintéticos</p>
-            <h2 id="sale-title">Registrar venta de prueba</h2>
+            <p className="eyebrow">Venta de prueba</p>
+            <h2 id="sale-title">Agregar un artículo</h2>
           </div>
         </div>
-        <p className="muted">Prueba local de importes y persistencia atómica. No modifica un catálogo ni reemplaza caja, stock o comprobantes.</p>
+        <p className="muted">Calculá el total y el vuelto. Esta operación de prueba no modifica stock ni emite comprobantes.</p>
         <form className="sale-form" onSubmit={(event) => void saveCashSale(event)}>
           <div>
             <label htmlFor="sale-product-name">Artículo de prueba</label>
@@ -248,59 +235,61 @@ export function App({ config }: { config: ClientConfiguration }) {
         </form>
       </section>
 
-      <div className="work-grid">
-        <section className="panel" aria-labelledby="observation-title">
-          <div className="panel-heading">
-            <div>
-              <p className="eyebrow">Almacenamiento local</p>
-              <h2 id="observation-title">Registrar nota de prueba</h2>
+      <details className="tools-disclosure">
+        <summary>Herramientas de prueba <span>{pendingCount} pendientes por sincronizar</span></summary>
+        <div className="work-grid">
+          <section className="panel" aria-labelledby="observation-title">
+            <div className="panel-heading">
+              <div>
+                <p className="eyebrow">Almacenamiento local</p>
+                <h2 id="observation-title">Registrar nota de prueba</h2>
+              </div>
             </div>
-          </div>
-          <p className="muted">Este texto se guarda localmente como dato de prueba. No ingreses nombres, ventas reales ni información personal.</p>
-          <form onSubmit={saveObservation}>
-            <label htmlFor="observation">Nota de prueba</label>
-            <textarea
-              id="observation"
-              value={observation}
-              onChange={(event) => setObservation(event.target.value)}
-              maxLength={500}
-              rows={4}
-              placeholder="Escribí una observación sintética"
-              required
-            />
-            <button className="button button--primary" disabled={isSaving || !observation.trim()} type="submit">
-              {isSaving ? "Guardando…" : "Guardar en este dispositivo"}
-            </button>
-          </form>
-        </section>
+            <p className="muted">Este texto se guarda localmente como dato de prueba. No ingreses nombres, ventas reales ni información personal.</p>
+            <form onSubmit={saveObservation}>
+              <label htmlFor="observation">Nota de prueba</label>
+              <textarea
+                id="observation"
+                value={observation}
+                onChange={(event) => setObservation(event.target.value)}
+                maxLength={500}
+                rows={4}
+                placeholder="Escribí una observación sintética"
+                required
+              />
+              <button className="button button--primary" disabled={isSaving || !observation.trim()} type="submit">
+                {isSaving ? "Guardando…" : "Guardar en este dispositivo"}
+              </button>
+            </form>
+          </section>
 
-        <section className="panel" aria-labelledby="sync-title">
-          <div className="panel-heading">
-            <div>
-              <p className="eyebrow">Sincronización</p>
-              <h2 id="sync-title">Pendientes por enviar</h2>
+          <section className="panel" aria-labelledby="sync-title">
+            <div className="panel-heading">
+              <div>
+                <p className="eyebrow">Sincronización</p>
+                <h2 id="sync-title">Pendientes por enviar</h2>
+              </div>
             </div>
-          </div>
-          <p className="muted">El token se conserva sólo en memoria durante esta sesión y nunca se incluye en el bundle.</p>
-          <label htmlFor="sync-token">Token temporal del spike</label>
-          <input
-            id="sync-token"
-            type="password"
-            autoComplete="off"
-            value={accessToken}
-            onChange={(event) => setAccessToken(event.target.value)}
-            placeholder="Pegá el token temporal"
-          />
-          <button className="button button--secondary" disabled={isSyncing || connection === "offline"} onClick={() => void synchronize()} type="button">
-            {isSyncing ? "Sincronizando…" : "Sincronizar ahora"}
-          </button>
-        </section>
-      </div>
+            <p className="muted">El token se conserva sólo en memoria durante esta sesión y nunca se incluye en el bundle.</p>
+            <label htmlFor="sync-token">Token temporal del spike</label>
+            <input
+              id="sync-token"
+              type="password"
+              autoComplete="off"
+              value={accessToken}
+              onChange={(event) => setAccessToken(event.target.value)}
+              placeholder="Pegá el token temporal"
+            />
+            <button className="button button--secondary" disabled={isSyncing || connection === "offline"} onClick={() => void synchronize()} type="button">
+              {isSyncing ? "Sincronizando…" : "Sincronizar ahora"}
+            </button>
+          </section>
+        </div>
+      </details>
 
       <div className="live-message" aria-live="polite">{message}</div>
       <footer className="app-footer">
-        <span>Almacenamiento local activo</span>
-        <span>Identificadores técnicos fuera de la vista cotidiana.</span>
+        <span>Entorno local de prueba · sin datos reales</span>
       </footer>
     </main>
   );

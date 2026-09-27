@@ -21,6 +21,7 @@
   "scripts": {
     "dev:client": "npm run dev --workspace @kioskina/client",
     "dev:gateway": "npm run dev --workspace @kioskina/sync-gateway",
+    "preview:client": "npm run preview --workspace @kioskina/client",
     "build:client": "npm run build --workspace @kioskina/client",
     "build:gateway": "npm run build --workspace @kioskina/sync-gateway",
     "typecheck:client": "npm run typecheck --workspace @kioskina/client",

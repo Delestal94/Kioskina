@@ -12,3 +12,7 @@
 8. La interfaz se preparará para traducciones sin texto incrustado ni diseños dependientes de una longitud fija.
 9. La accesibilidad se validará con personas mayores y usuarios con baja experiencia digital, no sólo mediante revisión técnica.
 10. El sistema deberá tolerar interrupciones y evitar que una pulsación repetida duplique ventas o cobros.
+
+## Aplicación en la interfaz actual
+
+El spike local usa una pantalla principal enfocada en la tarea visible, un estado breve de conexión y una sección desplegable para diagnóstico, notas sintéticas y sincronización. Esta composición es una decisión de presentación del spike; no sustituye validación de tareas reales ni define todavía la navegación completa del POS. Los IDs de tenant, sucursal y dispositivo se mantienen en configuración y diagnóstico, no como contenido principal para quien opera la caja.

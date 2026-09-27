@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "node --env-file=../../.env ./scripts/write-runtime-config.mjs && vite",
+    "preview": "vite preview",
     "build": "node --env-file=../../.env ./scripts/write-runtime-config.mjs && tsc -b && vite build",
     "configure:static": "node --env-file=../../.env ./scripts/write-runtime-config.mjs",
     "typecheck": "tsc --noEmit"

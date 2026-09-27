@@ -34,6 +34,10 @@ Los identificadores de comercio, sucursal, dispositivo y actor no se fijan en el
 
 La sincronización de prueba requiere que el token del cliente coincida con el token y el alcance configurados en `SYNC_CLIENT_CREDENTIALS_JSON`. Estas instrucciones son para desarrollo local y aún no se validaron mediante una ejecución completa. El shell offline debe evaluarse con el build instalable; Vite en modo desarrollo no forma parte de la garantía offline.
 
+### Build instalable para revisión interna
+
+`npm run build:client` genera el build web de este spike con la configuración pública indicada en `.env`. Para revisarlo localmente, ejecutá `npm run preview:client`; el host y puerto provienen de `VITE_CLIENT_HOST` y `VITE_CLIENT_PREVIEW_PORT`. Es una vista previa local del prototipo, no una release del POS ni un servidor de producción.
+
 Para el spike se puede exportar desde el coordinador un tenant sintético a un archivo NDJSON nuevo con `npm run export:events --workspace @kioskina/sync-gateway -- <tenant-sintético> <archivo.ndjson>`. Guardá el archivo fuera del repositorio en un directorio restringido. Es una herramienta técnica local, no un flujo de exportación para el dueño. Detené el gateway y cualquier escritor antes de exportar; el proceso de soporte y autorización de RF-052 sigue pendiente.
 
 Toda persona o agente de IA debe comenzar leyendo `AGENTS.md` y `docs/README.md`.
