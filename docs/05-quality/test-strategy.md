@@ -36,8 +36,12 @@
 | T-SYNC-005 | Descarga incremental repetida o interrumpida durante aplicación local | Eventos idempotentes; el cursor sólo avanza tras aplicar la página; la siguiente descarga no omite cambios |
 | T-SYNC-006 | Huecos o secuencias duplicadas en eventos de un dispositivo | La anomalía se informa y no se declara convergencia; al completar el hueco, el estado se recalcula |
 | T-SYNC-007 | Evento con tipo o versión futura/desconocida | Rechazo antes de persistir y sin adelantar el cursor |
+| T-SYNC-008 | Salud del coordinador | La UI no reporta sincronización disponible si CouchDB no responde; falta validar contra CouchDB real |
+| T-SYNC-009 | Sincronizar venta del spike | Dos nodos reciben el mismo evento sin duplicar su identidad; no prueba proyecciones comerciales |
 | T-SALE-001 | Doble toque en confirmar | Una venta, un cobro y un conjunto de movimientos |
 | T-SALE-002 | Cierre forzado en cada punto de confirmación | Venta completa recuperable o ningún efecto parcial |
+| T-SALE-003 | Importe de venta en enteros | Vuelto exacto con dos decimales; rechazo de pago insuficiente y precisión no admitida |
+| T-SALE-004 | Reintento de confirmación local | Mismo ID/contenido devuelve venta previa; otro contenido no duplica ni modifica |
 | T-STOCK-001 | Venta supera stock conocido | Ajuste exacto + salida, saldo cero y advertencia posterior |
 | T-CASH-001 | Dos usuarios/turnos | Movimientos y diferencias atribuidos correctamente |
 | T-AUTH-001 | Aplicar matriz inicial a cajero, encargado y dueño/administrador; probar asignaciones acumuladas y acciones no definidas desde UI, API y exportación | Denegación por defecto sin mutación y auditoría segura; autorizaciones con actor, autorizador y motivo |
@@ -50,7 +54,7 @@
 | T-CONFIG-002 | Cuerpo de solicitud excede el límite configurado del gateway | Rechazo previo a persistencia con tamaño límite obtenido de configuración externa |
 | T-PWA-001 | Instalar, cerrar y abrir el shell sin red | Manifiesto y recursos estáticos se abren desde caché; llamadas de API no se interceptan ni se guardan |
 | T-STORAGE-001 | Outbox sintética mayor a una página | Secuencias, conteo y extracción por lote recorren páginas sin cargar todos los documentos a memoria; no omiten ni repiten eventos |
-| T-EXPORT-TECH-001 | Exportar eventos sintéticos de un tenant con escritores detenidos | NDJSON contiene sobres canónicos, excluye metadatos/otros tenants, no sobrescribe salida y limpia fallos normales |
+| T-EXPORT-TECH-001 | Exportar eventos sintéticos de un tenant con escritores detenidos | NDJSON contiene sobres canónicos, excluye metadatos/otros tenants, pagina resultados, valida ID documento/sobre, no sobrescribe salida y limpia fallos normales |
 
 ## Matriz mínima de ejecución del spike
 

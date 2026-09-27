@@ -13,11 +13,11 @@
 | Operación completamente táctil | RF-002, RF-054, RF-060 | Principios UX; RNF-010 | No iniciada | T-A11Y-001 | Borrador |
 | Roles configurables y acumulables | RF-011, RF-038, RF-044 | RN-004, RN-005, RN-019, RN-028 | No iniciada | T-AUTH-001 | Matriz inicial ratificada el 2026-09-26; línea base pendiente |
 | Incorporación futura de idiomas | Pendiente | Pendiente | No iniciada | Pruebas de internacionalización por definir | Descubrimiento |
-| Venta rápida con carrito editable y múltiples búsquedas | RF-001, RF-002 | RN-001 | No iniciada | Pruebas funcionales y de usabilidad por definir | Borrador |
+| Venta rápida con carrito editable y múltiples búsquedas | RF-001, RF-002 | RN-001 | Spike descartable: una línea sintética y persistencia/sync de evento | T-SALE-003/004, T-SYNC-009; flujo comercial/usabilidad pendientes | No es implementación de producto; línea base pendiente |
 | Cobro inicial en efectivo, transferencia y QR | RF-006, RF-007, RF-008 | RN-002, RN-003 | No iniciada | Pruebas de pagos e idempotencia por definir | Borrador |
 | Control individual de caja por empleado | RF-010 | RN-006 | No iniciada | Pruebas de turnos y arqueo por definir | Borrador |
 | Controlar acciones sensibles mediante permisos | RF-011 | RN-004, RN-005, RN-028 | No iniciada | T-AUTH-001: permisos concedidos/denegados, actor, autorización y auditoría | Matriz inicial ratificada; línea base pendiente |
-| Continuar ventas esenciales ante cortes de Internet | RF-013, RF-057 | ADR-0001 a ADR-0003; RNF-013 a RNF-015 | No iniciada | T-SYNC-001, T-SYNC-002, T-SYNC-003 | Objetivo registrado: hasta 24 h; spike pendiente |
+| Continuar ventas esenciales ante cortes de Internet | RF-013, RF-057 | ADR-0001 a ADR-0003; RNF-013 a RNF-015 | Spike descartable: outbox, gateway, venta sintética y señal de disponibilidad | T-SYNC-001 a T-SYNC-009 | Persistencia/sync parciales; 24 h, CouchDB real y ventas siguen pendientes |
 | Catálogo de 500 a 2.000 artículos con variantes | RF-016, RF-017, RF-018 | RN-010 | No iniciada | Pruebas de catálogo y rendimiento por definir | Borrador |
 | Stock total, movimientos e inventarios auditables | RF-020, RF-021, RF-022, RF-023, RF-027 | RN-011 a RN-014; ADR-0003 | No iniciada | T-STOCK-001 y propiedades del libro | Borrador |
 | Alertas y sugerencias de reposición | RF-024 | Pendiente | No iniciada | Pruebas de umbrales y cálculo por definir | Borrador |

@@ -19,7 +19,7 @@ function sameScope(event: EventEnvelope, credential: SpikeCredential): boolean {
 
 export async function createGateway(
   configuration: GatewayConfiguration,
-  eventStore: Pick<CouchDbEventStore, "accept" | "pull"> = new CouchDbEventStore(configuration),
+  eventStore: Pick<CouchDbEventStore, "accept" | "pull" | "checkReady"> = new CouchDbEventStore(configuration),
   logging = true,
 ): Promise<FastifyInstance> {
   const app = Fastify({
@@ -41,7 +41,12 @@ export async function createGateway(
     allowedHeaders: ["content-type", "authorization"],
   });
 
-  app.get("/health", async () => ({ status: "ok" }));
+  app.get("/health", async (_request, reply) => {
+    if (!await eventStore.checkReady()) {
+      return reply.code(503).send({ status: "unavailable" });
+    }
+    return { status: "ok" };
+  });
 
   app.post("/v1/events", {
     schema: {

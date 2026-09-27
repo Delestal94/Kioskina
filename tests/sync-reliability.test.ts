@@ -2,13 +2,18 @@ import "fake-indexeddb/auto";
 import { randomUUID } from "node:crypto";
 import assert from "node:assert/strict";
 import { after, test } from "node:test";
+import { mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { canonicalJson, type EventEnvelope } from "@kioskina/event-contracts";
 
 if (!("self" in globalThis)) Object.defineProperty(globalThis, "self", { value: globalThis });
 const { default: PouchDB } = await import("pouchdb-browser");
 const { PouchLocalEventStore } = await import("../packages/local-store/src/index.ts");
 const { synchronizePendingEvents } = await import("../packages/application/src/index.ts");
-const { createSpikeObservation } = await import("../packages/spike-domain/src/index.ts");
+const { createSpikeCashSale, createSpikeObservation, parseAmountMinor } = await import("../packages/spike-domain/src/index.ts");
 const { createGateway } = await import("../apps/sync-gateway/src/server.ts");
+const { CouchDbEventExporter } = await import("../apps/sync-gateway/src/couchdb-event-exporter.ts");
 const { HttpEventSyncClient } = await import("../apps/client/src/infrastructure/HttpEventSyncClient.ts");
 const databases: Array<InstanceType<typeof PouchDB>> = [];
 const lockTails = new Map<string, Promise<void>>();
@@ -46,8 +51,9 @@ function observation(deviceId: string, sequence: number, id: string = randomUUID
   });
 }
 class MemoryCoordinator {
-  readonly events = new Map<string, { event: ReturnType<typeof observation>; acceptedAt: string }>();
-  async accept(event: ReturnType<typeof observation>) {
+  readonly events = new Map<string, { event: EventEnvelope; acceptedAt: string }>();
+  async checkReady() { return true; }
+  async accept(event: EventEnvelope) {
     const current = this.events.get(event.eventId);
     if (current && JSON.stringify(current.event) !== JSON.stringify(event)) throw new Error("idempotency conflict");
     const acceptedAt = current?.acceptedAt ?? new Date().toISOString();
@@ -221,4 +227,141 @@ test("el gateway limita el lote, el cuerpo y rechaza secuencias duplicadas sin e
     assert.equal(oversized.status, 413);
   });
   assert.equal(coordinator.events.size, 1);
+});
+
+test("la salud del gateway refleja si el coordinador puede persistir", async () => {
+  const coordinator = new MemoryCoordinator();
+  const app = await createGateway(gatewayConfiguration(), coordinator, false);
+  try {
+    assert.equal((await app.inject({ method: "GET", url: "/health" })).statusCode, 200);
+    coordinator.checkReady = async () => false;
+    const unavailable = await app.inject({ method: "GET", url: "/health" });
+    assert.equal(unavailable.statusCode, 503);
+    assert.deepEqual(unavailable.json(), { status: "unavailable" });
+  } finally {
+    await app.close();
+  }
+});
+
+test("la exportación técnica pagina eventos canónicos y excluye otros tenants", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "kioskina-export-"));
+  try {
+    const events = [
+      observation("device-a", 1, "export-one"),
+      { ...observation("device-a", 2, "export-other-tenant"), tenantId: "tenant-other" },
+      observation("device-a", 3, "export-two"),
+    ];
+    const docs = events.map((event) => ({ id: `event:${event.eventId}`, doc: { _id: `event:${event.eventId}`, _rev: "1-test", event } }))
+      .sort((left, right) => left.id.localeCompare(right.id));
+    let pages = 0;
+    const fetcher: typeof fetch = async (input) => {
+      const url = new URL(String(input));
+      pages += 1;
+      const offset = Number(url.searchParams.get("skip"));
+      const limit = Number(url.searchParams.get("limit"));
+      const startKey = JSON.parse(url.searchParams.get("startkey") ?? '"event:"') as string;
+      const eligible = docs.filter(({ id }) => id >= startKey);
+      return Response.json({ rows: eligible.slice(offset, offset + limit) });
+    };
+    const path = join(directory, "events.ndjson");
+    const exporter = new CouchDbEventExporter({
+      couchDbUrl: new URL("http://127.0.0.1:5984"), couchDbDatabase: "synthetic",
+      couchDbUsername: "synthetic", couchDbPassword: "synthetic", exportPageSize: 2,
+    }, fetcher);
+    assert.equal(await exporter.exportTenantEvents(tenantId, path), 2);
+    assert.equal(pages, 2);
+    const lines = (await readFile(path, "utf8")).trim().split("\n");
+    assert.deepEqual(lines, [canonicalJson(events[0]), canonicalJson(events[2])]);
+    assert.ok(lines.every((line) => !line.includes("_rev") && !line.includes('"event":')));
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test("la exportación no sobrescribe salida ni deja un parcial al encontrar un evento inválido", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "kioskina-export-"));
+  try {
+    const valid = observation("device-a", 1, "export-valid");
+    const exporterFor = (documentId: string, event: unknown) => new CouchDbEventExporter({
+      couchDbUrl: new URL("http://127.0.0.1:5984"), couchDbDatabase: "synthetic",
+      couchDbUsername: "synthetic", couchDbPassword: "synthetic", exportPageSize: 10,
+    }, async () => Response.json({ rows: [{ id: `event:${documentId}`, doc: { _id: `event:${documentId}`, event } }] }));
+    const existingPath = join(directory, "existing.ndjson");
+    await writeFile(existingPath, "preservar contenido\n", { flag: "wx" });
+    await assert.rejects(exporterFor(valid.eventId, valid).exportTenantEvents(tenantId, existingPath));
+    assert.equal(await readFile(existingPath, "utf8"), "preservar contenido\n");
+
+    const invalidPath = join(directory, "invalid.ndjson");
+    await assert.rejects(exporterFor("invalid", { eventId: "bad" }).exportTenantEvents(tenantId, invalidPath), /evento inválido/);
+    assert.deepEqual((await readdir(directory)).sort(), ["existing.ndjson"]);
+
+    const mismatchedPath = join(directory, "mismatched.ndjson");
+    await assert.rejects(exporterFor("different-id", valid).exportTenantEvents(tenantId, mismatchedPath), /no coincide con el evento/);
+    assert.deepEqual((await readdir(directory)).sort(), ["existing.ndjson"]);
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test("la venta de prueba usa centavos enteros y rechaza importes inconsistentes", async () => {
+  assert.equal(parseAmountMinor("12,3"), 1230);
+  assert.equal(parseAmountMinor("12.34"), 1234);
+  assert.equal(parseAmountMinor("12.345"), null);
+  assert.equal(parseAmountMinor("-1"), null);
+  assert.equal(parseAmountMinor("90071992547410.00"), null);
+  const sale = createSpikeCashSale({
+    eventId: "sale-valid", tenantId, branchId, deviceId: "device-a", actorId: "actor-synthetic",
+    deviceSequence: 1, productId: "product-synthetic", productName: "Artículo sintético",
+    quantity: 2, unitPriceMinor: 1250, currency: "ARS", cashReceivedMinor: 3000,
+  });
+  assert.equal((sale.payload as { totalMinor: number }).totalMinor, 2500);
+  assert.equal((sale.payload as { changeMinor: number }).changeMinor, 500);
+  assert.throws(() => createSpikeCashSale({
+    eventId: "sale-invalid", tenantId, branchId, deviceId: "device-a", actorId: "actor-synthetic",
+    deviceSequence: 1, productId: "product-synthetic", productName: "Artículo sintético",
+    quantity: 2, unitPriceMinor: 1250, currency: "ARS", cashReceivedMinor: 2499,
+  }), /importes .* no son consistentes/);
+});
+
+test("una venta completa se guarda como un evento y su reintento no duplica ni cambia el contenido", async () => {
+  const store = newStore("device-a");
+  const input = {
+    eventId: "sale-idempotent", tenantId, branchId, deviceId: "device-a", actorId: "actor-synthetic",
+    productId: "product-synthetic", productName: "Artículo sintético", quantity: 2,
+    unitPriceMinor: 1250, currency: "ARS", cashReceivedMinor: 3000,
+  };
+  const first = await store.appendCashSale(input);
+  const replay = await store.appendCashSale(input);
+  assert.equal(first.eventType, "spike.cash-sale-recorded.v1");
+  assert.deepEqual(replay, first);
+  assert.equal(await store.countPending(), 1);
+  await assert.rejects(store.appendCashSale({ ...input, cashReceivedMinor: 4000 }), /clave de idempotencia/);
+  assert.equal(await store.countPending(), 1);
+});
+
+test("dos nodos sincronizan una venta sintética una sola vez", async () => {
+  const coordinator = new MemoryCoordinator();
+  const storeA = newStore("device-a");
+  const databaseB = new PouchDB<{}>("node-b-" + randomUUID());
+  databases.push(databaseB);
+  const storeB = newStore("device-b", undefined, databaseB);
+  const saleInput = {
+    eventId: "sale-sync-once", tenantId, branchId, deviceId: "device-a", actorId: "actor-synthetic",
+    productId: "product-synthetic", productName: "Artículo sintético", quantity: 2,
+    unitPriceMinor: 1250, currency: "ARS", cashReceivedMinor: 3000,
+  };
+  await storeA.appendCashSale(saleInput);
+  await withGateway(coordinator, gatewayConfiguration(), async (fetcher) => {
+    const clientA = new HttpEventSyncClient("http://gateway.invalid", () => TOKEN, fetcher);
+    const clientB = new HttpEventSyncClient("http://gateway.invalid", () => TOKEN, fetcher);
+    await synchronizePendingEvents(storeA, clientA, 10);
+    await synchronizePendingEvents(storeB, clientB, 10);
+    await synchronizePendingEvents(storeB, clientB, 10);
+  });
+  const replicated = await storeB.listPending(10);
+  assert.equal(replicated.length, 0);
+  assert.equal(coordinator.events.size, 1);
+  const received = await databaseB.get<{ event: EventEnvelope }>("event:sale-sync-once");
+  assert.equal(received.event.eventType, "spike.cash-sale-recorded.v1");
+  assert.equal((received.event.payload as { totalMinor: number; changeMinor: number }).totalMinor, 2500);
 });

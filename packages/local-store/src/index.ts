@@ -1,7 +1,7 @@
 import PouchDB from "pouchdb-browser";
 import type { DeviceSequenceIssue, EventOutbox } from "@kioskina/application";
 import { canonicalJson, assertSupportedEvent, type CoordinatorReceipt, type EventEnvelope, type SyncedEvent } from "@kioskina/event-contracts";
-import { createSpikeObservation, type SpikeObservationInput } from "@kioskina/spike-domain";
+import { createSpikeCashSale, createSpikeObservation, type SpikeCashSaleInput, type SpikeObservationInput } from "@kioskina/spike-domain";
 
 interface StoredEventDocument {
   _id: string;
@@ -110,6 +110,38 @@ export class PouchLocalEventStore implements EventOutbox {
       const event = createSpikeObservation({ ...input, deviceSequence: lastSequence + 1, occurredAt: new Date().toISOString() });
       this.assertScope(event);
       await this.database.put<StoredEventDocument>({ _id: "event:" + event.eventId, event, deliveryState: "queued" });
+      return event;
+    });
+  }
+
+  async appendCashSale(input: Omit<SpikeCashSaleInput, "deviceSequence" | "occurredAt">): Promise<EventEnvelope> {
+    return this.exclusive(async () => {
+      if (input.deviceId !== this.identity.deviceId) throw new Error("El dispositivo de la venta no coincide con esta base.");
+      const documentId = "event:" + input.eventId;
+      let existing: StoredEventDocument | undefined;
+      try { existing = await this.database.get<StoredEventDocument>(documentId); }
+      catch (error) { if (!isMissing(error)) throw error; }
+      if (existing) {
+        this.assertScope(existing.event);
+        if (existing.event.deviceId !== this.identity.deviceId) throw new Error("El identificador de venta pertenece a otro dispositivo.");
+        const replay = createSpikeCashSale({
+          ...input,
+          deviceSequence: existing.event.deviceSequence,
+          occurredAt: existing.event.recordedAtLocal,
+        });
+        if (canonicalJson(existing.event) !== canonicalJson(replay)) {
+          throw new Error("La clave de idempotencia de la venta ya se usó con otro contenido.");
+        }
+        return existing.event;
+      }
+
+      let lastSequence = 0;
+      for await (const document of this.readEventDocuments()) {
+        if (document.event.deviceId === input.deviceId) lastSequence = Math.max(lastSequence, document.event.deviceSequence);
+      }
+      const event = createSpikeCashSale({ ...input, deviceSequence: lastSequence + 1, occurredAt: new Date().toISOString() });
+      this.assertScope(event);
+      await this.database.put<StoredEventDocument>({ _id: documentId, event, deliveryState: "queued" });
       return event;
     });
   }

@@ -12,6 +12,8 @@ const requiredFields = {
   branchId: "CLIENT_BRANCH_ID",
   deviceId: "CLIENT_DEVICE_ID",
   actorId: "CLIENT_ACTOR_ID",
+  currency: "CLIENT_CURRENCY",
+  locale: "CLIENT_LOCALE",
   syncBatchSize: "CLIENT_SYNC_BATCH_SIZE",
   localScanPageSize: "CLIENT_LOCAL_SCAN_PAGE_SIZE",
 };
@@ -27,6 +29,9 @@ for (const [field, variable] of Object.entries(requiredFields)) {
 if (missing.length > 0) {
   throw new Error(`Completá estas variables en .env antes de iniciar: ${missing.join(", ")}`);
 }
+if (!/^[A-Z]{3}$/.test(configuration.currency)) throw new Error("CLIENT_CURRENCY debe ser un código de moneda ISO de tres letras.");
+try { new Intl.NumberFormat(configuration.locale); }
+catch { throw new Error("CLIENT_LOCALE debe ser una configuración regional válida."); }
 for (const field of ["appThemeColor", "appBackgroundColor"]) {
   if (!/^#[\da-f]{6}$/i.test(configuration[field])) {
     throw new Error(`${requiredFields[field]} debe usar el formato hexadecimal #RRGGBB.`);

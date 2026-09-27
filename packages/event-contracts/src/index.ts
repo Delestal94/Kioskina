@@ -63,14 +63,38 @@ export type SyncPullResponse = Static<typeof syncPullResponseSchema>;
 const observationPayloadSchema = Type.Object({
   observation: Type.String({ minLength: 1, maxLength: 500, pattern: "\\S" }),
 }, { additionalProperties: false });
+const cashSalePayloadSchema = Type.Object({
+  currency: Type.String({ pattern: "^[A-Z]{3}$" }),
+  product: Type.Object({
+    productId: Type.String({ minLength: 1, maxLength: 120 }),
+    name: Type.String({ minLength: 1, maxLength: 160, pattern: "\\S" }),
+    quantity: Type.Integer({ minimum: 1, maximum: Number.MAX_SAFE_INTEGER }),
+    unitPriceMinor: Type.Integer({ minimum: 0, maximum: Number.MAX_SAFE_INTEGER }),
+    lineTotalMinor: Type.Integer({ minimum: 0, maximum: Number.MAX_SAFE_INTEGER }),
+  }, { additionalProperties: false }),
+  totalMinor: Type.Integer({ minimum: 0, maximum: Number.MAX_SAFE_INTEGER }),
+  cashReceivedMinor: Type.Integer({ minimum: 0, maximum: Number.MAX_SAFE_INTEGER }),
+  changeMinor: Type.Integer({ minimum: 0, maximum: Number.MAX_SAFE_INTEGER }),
+}, { additionalProperties: false });
 
 export class UnsupportedEventError extends Error {}
 
 export function assertSupportedEvent(value: unknown): asserts value is EventEnvelope {
   if (!Value.Check(eventEnvelopeSchema, value)) throw new UnsupportedEventError("El sobre de evento no es válido.");
-  if (value.schemaVersion !== 1 || value.eventType !== "spike.observation-recorded.v1"
-    || value.aggregateType !== "spike-observation" || !Value.Check(observationPayloadSchema, value.payload)) {
+  const supportedObservation = value.eventType === "spike.observation-recorded.v1"
+    && value.aggregateType === "spike-observation" && Value.Check(observationPayloadSchema, value.payload);
+  const supportedCashSale = value.eventType === "spike.cash-sale-recorded.v1"
+    && value.aggregateType === "sale" && Value.Check(cashSalePayloadSchema, value.payload);
+  if (value.schemaVersion !== 1 || (!supportedObservation && !supportedCashSale)) {
     throw new UnsupportedEventError("El tipo, versión o contenido del evento no está soportado por este spike.");
+  }
+  if (supportedCashSale) {
+    const { product, totalMinor, cashReceivedMinor, changeMinor } = value.payload as Static<typeof cashSalePayloadSchema>;
+    const expectedTotal = product.quantity * product.unitPriceMinor;
+    if (!Number.isSafeInteger(expectedTotal) || product.lineTotalMinor !== expectedTotal || totalMinor !== expectedTotal
+      || cashReceivedMinor < totalMinor || changeMinor !== cashReceivedMinor - totalMinor) {
+      throw new UnsupportedEventError("Los importes de la venta de prueba no son consistentes.");
+    }
   }
   for (const identifier of [value.eventId, value.tenantId, value.branchId, value.deviceId, value.actorId]) {
     if (!identifier.trim() || identifier !== identifier.trim()) throw new UnsupportedEventError("El identificador del evento no es válido.");

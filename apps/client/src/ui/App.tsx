@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { v7 as uuidv7 } from "uuid";
 import { synchronizePendingEvents } from "@kioskina/application";
+import { parseAmountMinor } from "@kioskina/spike-domain";
 import { PouchLocalEventStore } from "@kioskina/local-store";
 import type { ClientConfiguration } from "../config";
 import { HttpEventSyncClient } from "../infrastructure/HttpEventSyncClient";
+import { checkCoordinatorAvailability, type CoordinatorAvailability } from "../infrastructure/CoordinatorHealthProbe";
 
 type ConnectionState = "online" | "offline";
 
@@ -16,11 +18,17 @@ export function App({ config }: { config: ClientConfiguration }) {
     [config],
   );
   const [connection, setConnection] = useState<ConnectionState>(navigator.onLine ? "online" : "offline");
+  const [coordinator, setCoordinator] = useState<CoordinatorAvailability>("checking");
   const [pendingCount, setPendingCount] = useState(0);
   const [observation, setObservation] = useState("");
+  const [saleProductName, setSaleProductName] = useState("");
+  const [saleUnitPrice, setSaleUnitPrice] = useState("");
+  const [saleQuantity, setSaleQuantity] = useState("");
+  const [saleCashReceived, setSaleCashReceived] = useState("");
   const [accessToken, setAccessToken] = useState("");
   const [message, setMessage] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [isSavingSale, setIsSavingSale] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
 
   useEffect(() => {
@@ -28,14 +36,29 @@ export function App({ config }: { config: ClientConfiguration }) {
   }, [config]);
 
   useEffect(() => {
-    const update = () => setConnection(navigator.onLine ? "online" : "offline");
+    let active = true;
+    const probe = async () => {
+      const hasNetwork = navigator.onLine;
+      setConnection(hasNetwork ? "online" : "offline");
+      if (!hasNetwork) {
+        setCoordinator("unavailable");
+        return;
+      }
+      const availability = await checkCoordinatorAvailability(config.syncApiUrl);
+      if (active) setCoordinator(availability);
+    };
+    const update = () => void probe();
+    void probe();
     window.addEventListener("online", update);
     window.addEventListener("offline", update);
+    const interval = window.setInterval(update, 30_000);
     return () => {
+      active = false;
+      window.clearInterval(interval);
       window.removeEventListener("online", update);
       window.removeEventListener("offline", update);
     };
-  }, []);
+  }, [config.syncApiUrl]);
 
   useEffect(() => {
     if (!store) return;
@@ -62,6 +85,40 @@ export function App({ config }: { config: ClientConfiguration }) {
   }, [store]);
 
   if (!store) return null;
+
+  const currencyFormatter = new Intl.NumberFormat(config.locale, { style: "currency", currency: config.currency });
+  const parsedUnitPrice = parseAmountMinor(saleUnitPrice);
+  const parsedQuantity = Number(saleQuantity);
+  const saleTotal = parsedUnitPrice !== null && Number.isSafeInteger(parsedQuantity) && parsedQuantity > 0
+    && Number.isSafeInteger(parsedUnitPrice * parsedQuantity) ? parsedUnitPrice * parsedQuantity : null;
+  const receivedAmount = parseAmountMinor(saleCashReceived);
+  const changeAmount = saleTotal !== null && receivedAmount !== null && receivedAmount >= saleTotal
+    ? receivedAmount - saleTotal : null;
+
+  const saveCashSale = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!saleProductName.trim() || saleTotal === null || receivedAmount === null || receivedAmount < saleTotal) return;
+    setIsSavingSale(true);
+    setMessage("");
+    try {
+      await store.appendCashSale({
+        eventId: uuidv7(), tenantId: config.tenantId, branchId: config.branchId,
+        deviceId: config.deviceId, actorId: config.actorId, productId: uuidv7(),
+        productName: saleProductName.trim(), quantity: parsedQuantity,
+        unitPriceMinor: parsedUnitPrice!, currency: config.currency, cashReceivedMinor: receivedAmount,
+      });
+      setSaleProductName("");
+      setSaleUnitPrice("");
+      setSaleQuantity("");
+      setSaleCashReceived("");
+      setPendingCount(await store.countPending());
+      setMessage("Venta sintética guardada completa en este dispositivo.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "No se pudo guardar la venta de prueba.");
+    } finally {
+      setIsSavingSale(false);
+    }
+  };
 
   const saveObservation = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -120,9 +177,15 @@ export function App({ config }: { config: ClientConfiguration }) {
           <span className="brand-mark" aria-hidden="true">{config.appName.charAt(0).toLocaleUpperCase()}</span>
           <span>{config.appName}</span>
         </a>
-        <div className={`connection-pill connection-pill--${connection}`} role="status">
+        <div className={`connection-pill connection-pill--${coordinator === "available" ? "online" : "offline"}`} role="status" aria-live="polite">
           <span className="connection-dot" aria-hidden="true" />
-          {connection === "online" ? "Con conexión" : "Sin conexión"}
+          {connection === "offline"
+            ? "Sin conexión de red"
+            : coordinator === "checking"
+              ? "Verificando coordinador…"
+              : coordinator === "available"
+                ? "Coordinador disponible"
+                : "Coordinador no disponible"}
         </div>
       </header>
 
@@ -148,6 +211,41 @@ export function App({ config }: { config: ClientConfiguration }) {
           <strong className="status-id">{config.deviceId}</strong>
           <span className="status-caption">Identificador configurado</span>
         </article>
+      </section>
+
+      <section className="panel sale-panel" aria-labelledby="sale-title">
+        <div className="panel-heading">
+          <div>
+            <p className="eyebrow">Spike descartable · datos sintéticos</p>
+            <h2 id="sale-title">Registrar venta de prueba</h2>
+          </div>
+        </div>
+        <p className="muted">Prueba local de importes y persistencia atómica. No modifica un catálogo ni reemplaza caja, stock o comprobantes.</p>
+        <form className="sale-form" onSubmit={(event) => void saveCashSale(event)}>
+          <div>
+            <label htmlFor="sale-product-name">Artículo de prueba</label>
+            <input id="sale-product-name" value={saleProductName} onChange={(event) => setSaleProductName(event.target.value)} maxLength={160} required />
+          </div>
+          <div>
+            <label htmlFor="sale-unit-price">Precio unitario ({config.currency})</label>
+            <input id="sale-unit-price" inputMode="decimal" value={saleUnitPrice} onChange={(event) => setSaleUnitPrice(event.target.value)} placeholder="0,00" required />
+          </div>
+          <div>
+            <label htmlFor="sale-quantity">Cantidad de artículos</label>
+            <input id="sale-quantity" type="number" inputMode="numeric" min="1" step="1" value={saleQuantity} onChange={(event) => setSaleQuantity(event.target.value)} required />
+          </div>
+          <div>
+            <label htmlFor="sale-cash-received">Efectivo recibido ({config.currency})</label>
+            <input id="sale-cash-received" inputMode="decimal" value={saleCashReceived} onChange={(event) => setSaleCashReceived(event.target.value)} placeholder="0,00" required />
+          </div>
+          <div className="sale-summary" aria-live="polite">
+            <span>Total: {saleTotal === null ? "—" : currencyFormatter.format(saleTotal / 100)}</span>
+            <span>Vuelto: {changeAmount === null ? "—" : currencyFormatter.format(changeAmount / 100)}</span>
+          </div>
+          <button className="button button--primary" disabled={isSavingSale || !saleProductName.trim() || saleTotal === null || changeAmount === null} type="submit">
+            {isSavingSale ? "Guardando…" : "Confirmar venta de prueba"}
+          </button>
+        </form>
       </section>
 
       <div className="work-grid">

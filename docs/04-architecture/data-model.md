@@ -90,3 +90,8 @@ Stock actual, saldo de fiado, total de turno e informes son proyecciones derivad
 - El intercambio entre motores usa NDJSON UTF-8: un sobre de evento canónico por línea, sin `_rev`, estado de entrega ni metadatos propios de CouchDB/PouchDB.
 - La utilidad del spike requiere acceso local a credenciales de coordinador, un tenant sintético explícito y un archivo de salida nuevo; no forma parte de la interfaz del dueño ni satisface RF-052. Las pruebas deben mantener aislado el tenant exportado y revisar el manejo del archivo parcial ante errores. El modo `0600` se solicita al SO, pero el nivel real de protección depende de sus ACL y del sistema de archivos.
 - La lectura se pagina y el archivo se publica al destino sólo cuando termina la exportación. El spike no crea una instantánea consistente frente a escrituras concurrentes: detener los escritores durante la extracción.
+
+## Evento de venta sintética del spike
+
+- `spike.cash-sale-recorded.v1` conserva una línea sintética, moneda, cantidad entera, precio en unidad mínima, total, efectivo recibido y vuelto. El snapshot se valida con aritmética entera y se guarda como un documento/outbox para medir una escritura individual durable e idempotente.
+- Este evento experimental no reemplaza el modelo de transacción de venta de producto descrito arriba: no crea eventos separados de pago, caja, inventario, auditoría ni proyecciones, y no sirve como contrato de producción. La línea base debe decidir su representación y validar atomicidad de todos esos efectos antes de promover código.

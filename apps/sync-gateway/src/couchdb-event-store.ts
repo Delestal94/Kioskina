@@ -56,6 +56,19 @@ export class CouchDbEventStore {
     }
   }
 
+  async checkReady(): Promise<boolean> {
+    try {
+      const response = await fetch(this.databaseUrl, {
+        method: "HEAD",
+        headers: { authorization: this.authorization },
+        signal: AbortSignal.timeout(2_500),
+      });
+      return response.ok;
+    } catch {
+      return false;
+    }
+  }
+
   async accept(event: EventEnvelope): Promise<StoredEventResult> {
     assertSupportedEvent(event);
     const documentId = `event:${event.eventId}`;

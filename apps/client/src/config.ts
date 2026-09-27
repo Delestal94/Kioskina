@@ -8,6 +8,8 @@ export interface ClientConfiguration {
   branchId: string;
   deviceId: string;
   actorId: string;
+  currency: string;
+  locale: string;
   syncBatchSize: number;
   localScanPageSize: number;
 }
@@ -18,7 +20,7 @@ export function parseClientConfiguration(value: unknown): ClientConfiguration {
   }
   const candidate = value as Record<string, unknown>;
   const fields: Array<Exclude<keyof ClientConfiguration, "syncBatchSize" | "localScanPageSize">> = [
-    "appName", "appThemeColor", "appBackgroundColor", "syncApiUrl", "localDatabaseName", "tenantId", "branchId", "deviceId", "actorId",
+    "appName", "appThemeColor", "appBackgroundColor", "syncApiUrl", "localDatabaseName", "tenantId", "branchId", "deviceId", "actorId", "currency", "locale",
   ];
   const missing = fields.filter((field) => typeof candidate[field] !== "string" || !candidate[field].trim());
   if (missing.length > 0) {
@@ -42,6 +44,9 @@ export function parseClientConfiguration(value: unknown): ClientConfiguration {
   if (!Number.isSafeInteger(localScanPageSize) || localScanPageSize < 1) {
     throw new Error("El tamaño de página local debe ser un entero positivo.");
   }
+  if (!/^[A-Z]{3}$/.test(candidate["currency"] as string)) throw new Error("La moneda debe ser un código ISO de tres letras.");
+  try { new Intl.NumberFormat(candidate["locale"] as string); }
+  catch { throw new Error("La configuración regional no es válida."); }
 
   return {
     appName: (candidate["appName"] as string).trim(),
@@ -53,6 +58,8 @@ export function parseClientConfiguration(value: unknown): ClientConfiguration {
     branchId: (candidate["branchId"] as string).trim(),
     deviceId: (candidate["deviceId"] as string).trim(),
     actorId: (candidate["actorId"] as string).trim(),
+    currency: (candidate["currency"] as string).trim(),
+    locale: (candidate["locale"] as string).trim(),
     syncBatchSize,
     localScanPageSize,
   };

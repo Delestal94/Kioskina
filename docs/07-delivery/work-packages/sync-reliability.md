@@ -18,6 +18,7 @@ Obtener un transporte que compile y tenga evidencia repetible de paginación, ai
 5. Una base local no se puede reutilizar inadvertidamente con otro comercio, sucursal, dispositivo o coordinador. Los procesos de sincronización concurrentes no pueden adelantar o retroceder el checkpoint fuera de orden.
 6. Errores de contrato, límites, alcance e idempotencia tienen pruebas negativas; las pruebas usan datos sintéticos y secretos efímeros.
 7. Build y resultados de pruebas se registran con sus límites; no se confunden dobles de infraestructura con CouchDB o hardware reales.
+8. La UI distingue la conexión de red de la disponibilidad del coordinador; el endpoint `/health` sólo responde disponible cuando CouchDB responde para la base configurada.
 
 ## Comportamiento
 
@@ -27,6 +28,7 @@ Obtener un transporte que compile y tenga evidencia repetible de paginación, ai
 | Auditoría | Códigos y conteos técnicos; sin cuerpos ni tokens en registros |
 | Offline | Outbox durable; descarga incremental independiente de secuencia causal |
 | Fallos | Reintento idempotente, checkpoint posterior a aplicación; escrituras parciales recuperables |
+| Disponibilidad | Sonda periódica con timeout; distingue navegador con red de gateway/CouchDB utilizables; no incluye token |
 | Accesibilidad | Estado y errores en texto con región viva; controles accesibles |
 | Hardware | Pruebas de persistencia simulada y build; navegador/Android requieren evidencia aparte |
 | Privacidad | Sólo fixtures sintéticos; ningún secreto en archivos |
@@ -37,4 +39,8 @@ Puertos de aplicación separados de adaptadores HTTP y PouchDB. Contratos de err
 
 ## Pruebas y evidencia
 
-`npm run test:sync`: 7 pruebas aprobadas: dos nodos con páginas 4/10 y llamadas concurrentes serializadas, rechazo de alcance fuera de sucursal, replay tras escritura parcial, rechazo de versión futura sin checkpoint, detección y resolución de un hueco de secuencia, aislamiento de base por identidad y rechazo de secuencias repetidas/cuerpo excesivo. `npm run typecheck:client`, `npm run typecheck:gateway`, `npm run typecheck:tests`, `npm run build:gateway` y `npm run build:client` aprobados. El build del cliente ya no externaliza `events` tras añadir el polyfill explícito. `npm audit` conserva dos avisos moderados vinculados al uuid 8.3.2 incluido por PouchDB 9.0.0; uuid directo usa la versión corregida 13.0.1. No se ejecutó el coordinador CouchDB real ni navegador/Android; ventas comerciales, partición de 24 h, backup y restauración permanecen pendientes.
+`npm run test:sync`: 13 pruebas aprobadas en la suite vigente: intercambio paginado entre nodos, rechazo de alcance, replay tras escritura parcial, rechazo de versión futura, detección de huecos, aislamiento de base local, rechazo de secuencias repetidas/cuerpo excesivo, salud degradada del coordinador, exportación canónica paginada que excluye otros tenants y preserva salida existente/limpia parciales ante documentos inválidos o IDs inconsistentes, validación monetaria sintética, idempotencia de venta local y replicación de venta entre dos nodos. Las pruebas de exportación/venta usan dobles de infraestructura; no se ejecutaron contra CouchDB real. En el entorno Windows de esta ejecución, `os.userInfo()` falla dentro del runtime local de tsx; las pruebas se ejecutaron aprobadas con un ajuste temporal en los dos archivos ignorados de `node_modules/tsx` y ambos se restauraron inmediatamente. `npm run typecheck:client`, `npm run typecheck:gateway`, `npm run typecheck:tests`, `npm run build:gateway` y `npm run build:client` aprobados. El build del cliente ya no externaliza `events` tras añadir el polyfill explícito. `npm audit` conserva dos avisos moderados vinculados al uuid 8.3.2 incluido por PouchDB 9.0.0; uuid directo usa la versión corregida 13.0.1. No se ejecutó el coordinador CouchDB real ni navegador/Android; ventas comerciales, partición de 24 h, backup y restauración permanecen pendientes.
+
+La disponibilidad visible se amplía en esta iteración y queda pendiente de validación en ejecución: el gateway comprueba CouchDB y el cliente consulta `/health` con espera acotada. La prueba de contrato correspondiente es `T-SYNC-008`; el doble de coordinador no sustituye la verificación con CouchDB real.
+
+La interfaz local `http://127.0.0.1:5173/` se recargó y mostró «Coordinador no disponible» al no estar levantados gateway/CouchDB. Esta comprobación confirma el estado de fallo visible en el navegador disponible; no valida Chrome/Edge/Android de la matriz ni la respuesta de un CouchDB real.

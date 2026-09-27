@@ -37,6 +37,7 @@ En modo desarrollo Vite sirve módulos fuente; esa configuración no prueba la a
 - Gateway y CouchDB no se publican con credenciales predeterminadas.
 - TLS, secretos externos a imágenes, principio de mínimo privilegio y red restringida.
 - Salud de gateway, cola, rechazos, conflictos, espacio, backup y versión se monitorean.
+- El endpoint `/health` verifica que la base CouchDB configurada responda; la UI separa la conectividad del navegador de la disponibilidad del coordinador.
 - Alertas no incluyen nombres, teléfonos, productos vendidos ni importes salvo diagnóstico autorizado y necesario.
 
 ## Respaldo y recuperación

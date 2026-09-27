@@ -18,7 +18,7 @@ export class CouchDbEventExporter {
   private readonly databaseUrl: URL;
   private readonly authorization: string;
 
-  constructor(private readonly configuration: CouchDbConfiguration) {
+  constructor(private readonly configuration: CouchDbConfiguration, private readonly fetcher: typeof fetch = fetch) {
     const root = configuration.couchDbUrl.href.endsWith("/")
       ? configuration.couchDbUrl.href
       : `${configuration.couchDbUrl.href}/`;
@@ -37,7 +37,7 @@ export class CouchDbEventExporter {
       pageUrl.searchParams.set("skip", String(skip));
       pageUrl.searchParams.set("limit", String(this.configuration.exportPageSize));
 
-      const response = await fetch(pageUrl, { headers: { authorization: this.authorization } });
+      const response = await this.fetcher(pageUrl, { headers: { authorization: this.authorization } });
       if (!response.ok) throw new Error(`No se pudo leer el coordinador para exportación (HTTP ${response.status}).`);
       const page = await response.json() as CouchDbAllDocsPage;
       if (!Array.isArray(page.rows)) throw new Error("El coordinador devolvió una página de exportación inválida.");
@@ -52,6 +52,9 @@ export class CouchDbEventExporter {
           || !Value.Check(eventEnvelopeSchema, event)) {
           throw new Error(`Se encontró un evento inválido en el coordinador (documento ${row.id}).`);
         }
+        if (row.id !== `event:${event.eventId}`) {
+          throw new Error(`El identificador del documento no coincide con el evento exportado (${row.id}).`);
+        }
         if (event.tenantId === tenantId) yield event;
       }
 
@@ -62,7 +65,7 @@ export class CouchDbEventExporter {
   }
 
   async exportTenantEvents(tenantId: string, outputPath: string): Promise<number> {
-    if (!tenantId.trim()) throw new Error("Indicá el tenant sintético que se va a exportar.");
+    if (!tenantId.trim() || tenantId !== tenantId.trim()) throw new Error("Indicá el tenant sintético que se va a exportar.");
     if (!outputPath.trim()) throw new Error("Indicá el archivo de salida.");
 
     const temporaryPath = `${outputPath}.${randomUUID()}.partial`;
