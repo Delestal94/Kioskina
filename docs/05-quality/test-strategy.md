@@ -52,7 +52,7 @@
 | T-A11Y-001 | Venta táctil sin teclado/lector | Flujo completo, objetivos accesibles y mensajes entendibles |
 | T-CONFIG-001 | Configuración externa incompleta, inválida y válida | Falla cerrada sin exponer secretos; los valores de comercio/dispositivo provienen del runtime y no del bundle |
 | T-CONFIG-002 | Cuerpo de solicitud excede el límite configurado del gateway | Rechazo previo a persistencia con tamaño límite obtenido de configuración externa |
-| T-PWA-001 | Instalar, cerrar y abrir el shell sin red | Manifiesto y recursos estáticos se abren desde caché; llamadas de API no se interceptan ni se guardan |
+| T-PWA-001 | Confirmar control del Service Worker y carga de assets; abrir online para refrescar shell, detener servidor y recargar; volver online y repetir tras una nueva versión | Shell y assets de la revisión más reciente se abren desde caché; estado del coordinador refleja falta de red; llamadas de API no se interceptan ni guardan |
 | T-STORAGE-001 | Outbox sintética mayor a una página | Secuencias, conteo y extracción por lote recorren páginas sin cargar todos los documentos a memoria; no omiten ni repiten eventos |
 | T-EXPORT-TECH-001 | Exportar eventos sintéticos de un tenant con escritores detenidos | NDJSON contiene sobres canónicos, excluye metadatos/otros tenants, pagina resultados, valida ID documento/sobre, no sobrescribe salida y limpia fallos normales |
 

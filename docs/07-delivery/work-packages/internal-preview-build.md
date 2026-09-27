@@ -47,7 +47,7 @@ Generar un build estático reproducible de la interfaz actual y revisarlo localm
 
 | ID | Nivel | Caso | Resultado |
 |---|---|---|---|
-| T-PWA-001 | Manual/browser | Confirmar que el Service Worker controla la página, apagar preview y recargar | Primer intento falló: tras detener el preview, la recarga quedó en blanco. No se verificó el estado `controller` antes de cortar el servidor; repetir con esa precondición explícita |
+| T-PWA-001 | Manual/browser | Confirmar que el Service Worker controla la página, apagar preview y recargar; reconectar y actualizar el shell cacheado | Aprobado en v2: tras abrir el build nuevo, detener el preview y recargar mostró la interfaz actual cacheada y el servidor no disponible. Preview restaurado en `4173` |
 | T-CONFIG-001 | Build/config | Validar configuración y ausencia de secretos del gateway | Build generado; runtime sintético inspeccionado, sin credenciales de gateway |
 | T-UX-001 | Manual/browser | Revisar la jerarquía, estados comprensibles, formulario de venta y disclosure de herramientas en escritorio y ventana móvil | Escritorio: revisado visualmente y árbol accesible confirmado; móvil: breakpoint de una columna inspeccionado en CSS, prueba real pendiente |
 | T-THEME-001 | Inspección/build | Verificar que los colores de componentes usan tokens semánticos y que Vite genera el build con el tema | Build aprobado; valores cromáticos concentrados en tokens `:root`, componentes referencian variables; runtime config sintético inspeccionado |
@@ -55,5 +55,5 @@ Generar un build estático reproducible de la interfaz actual y revisarlo localm
 ## Evidencia y documentación
 
 - Documentos: README del repositorio, este paquete y estrategia de pruebas.
-- Evidencia ejecutada: `npm run typecheck:client` y `npm run build:client` aprobados; vista local servida en `http://127.0.0.1:4173/`.
+- Evidencia ejecutada: `npm run typecheck:client` y `npm run build:client` aprobados; `T-PWA-001` aprobado con recarga offline de la interfaz actual; vista local restaurada en `http://127.0.0.1:4173/`.
 - No habilita: aprobación de línea base, piloto real ni publicación de release.

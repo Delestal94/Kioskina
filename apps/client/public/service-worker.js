@@ -1,4 +1,4 @@
-const CACHE_NAME = "kioskina-shell-v1";
+const CACHE_NAME = "kioskina-shell-v2";
 const INITIAL_ASSETS = ["/", "/manifest.webmanifest", "/runtime-config.json", "/icon.svg"];
 
 self.addEventListener("install", (event) => {
@@ -50,7 +50,17 @@ self.addEventListener("fetch", (event) => {
   }
 
   if (request.mode === "navigate") {
-    event.respondWith(fetch(request).catch(async () => (await caches.match("/")) || Response.error()));
+    event.respondWith((async () => {
+      try {
+        const response = await fetch(request);
+        if (response.ok && response.type === "basic") {
+          await (await caches.open(CACHE_NAME)).put("/", response.clone());
+        }
+        return response;
+      } catch {
+        return (await caches.match(new URL("/", self.location.origin))) || Response.error();
+      }
+    })());
     return;
   }
 
