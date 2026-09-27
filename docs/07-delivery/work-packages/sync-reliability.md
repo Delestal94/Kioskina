@@ -44,3 +44,7 @@ Puertos de aplicación separados de adaptadores HTTP y PouchDB. Contratos de err
 La disponibilidad visible se amplía en esta iteración y queda pendiente de validación en ejecución: el gateway comprueba CouchDB y el cliente consulta `/health` con espera acotada. La prueba de contrato correspondiente es `T-SYNC-008`; el doble de coordinador no sustituye la verificación con CouchDB real.
 
 La interfaz local `http://127.0.0.1:5173/` se recargó y mostró «Coordinador no disponible» al no estar levantados gateway/CouchDB. Esta comprobación confirma el estado de fallo visible en el navegador disponible; no valida Chrome/Edge/Android de la matriz ni la respuesta de un CouchDB real.
+
+## Intento de validación con CouchDB real — 2026-09-27
+
+En el host Windows hay Docker CLI, pero `docker version` no pudo conectar con el daemon (`npipe:////./pipe/docker_engine`, pipe inexistente); tampoco hay ejecutable local `couchdb`. Por lo tanto no se pudo iniciar `infra/compose.yaml` y la validación real continúa pendiente. El `.env` local ya contiene los nombres requeridos, pero no se registran aquí sus valores. El preview del cliente permaneció accesible en `http://127.0.0.1:4173/` (HTTP 200). Repetir el procedimiento de README cuando el daemon Docker esté disponible; no interpretar las pruebas con coordinador en memoria como sustituto.
