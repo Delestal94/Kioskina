@@ -40,4 +40,8 @@ La sincronización de prueba requiere que el token del cliente coincida con el t
 
 Para el spike se puede exportar desde el coordinador un tenant sintético a un archivo NDJSON nuevo con `npm run export:events --workspace @kioskina/sync-gateway -- <tenant-sintético> <archivo.ndjson>`. Guardá el archivo fuera del repositorio en un directorio restringido. Es una herramienta técnica local, no un flujo de exportación para el dueño. Detené el gateway y cualquier escritor antes de exportar; el proceso de soporte y autorización de RF-052 sigue pendiente.
 
+### Validación continua
+
+`.github/workflows/ci.yml` corre en cada push a `main`, pull request y ejecución manual. Usa Node de `.nvmrc`, instala desde el lockfile y ejecuta chequeos de tipos y builds. El job usa una identidad local `*-ci`, permisos de lectura y no despliega. No ejecuta pruebas de comportamiento. Un resultado verde no equivale a validar CouchDB real, navegadores Windows/Android ni una release del POS; el alcance está en `docs/07-delivery/work-packages/continuous-integration-spike.md`.
+
 Toda persona o agente de IA debe comenzar leyendo `AGENTS.md` y `docs/README.md`.

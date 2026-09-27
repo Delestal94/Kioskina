@@ -25,6 +25,10 @@
 | Seguridad | Abuso y aislamiento | autorización negativa, replay, revocación, soporte temporal |
 | Operación | Despliegue y recuperación | backup, restore, rollback, pérdida de dispositivo |
 
+## Integración continua del spike
+
+`.github/workflows/ci.yml` automatiza en GitHub los typechecks y builds del monorepo con Node fijado por `.nvmrc`. El runner sólo tiene permiso de lectura y compila el cliente con identidad sintética. No ejecuta suites de comportamiento. La suite de sincronización permanece definida aparte; la CI tampoco reemplaza CouchDB, navegadores/hardware reales, particiones de 24 horas, restore ni revisión manual de seguridad. No despliega ni publica.
+
 ## Suites críticas iniciales
 
 | ID | Escenario | Resultado esperado |
