@@ -1,0 +1,31 @@
+{
+  "name": "kioskina",
+  "private": true,
+  "version": "0.0.0-spike",
+  "type": "module",
+  "description": "Prototipo descartable para validar la arquitectura local-first de Kioskina.",
+  "engines": {
+    "node": ">=24 <25",
+    "npm": ">=11"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "devDependencies": {
+    "@types/node": "24.0.10",
+    "fake-indexeddb": "6.2.5",
+    "tsx": "4.20.3",
+    "typescript": "7.0.2"
+  },
+  "scripts": {
+    "dev:client": "npm run dev --workspace @kioskina/client",
+    "dev:gateway": "npm run dev --workspace @kioskina/sync-gateway",
+    "build:client": "npm run build --workspace @kioskina/client",
+    "build:gateway": "npm run build --workspace @kioskina/sync-gateway",
+    "typecheck:client": "npm run typecheck --workspace @kioskina/client",
+    "typecheck:gateway": "npm run typecheck --workspace @kioskina/sync-gateway",
+    "test:sync": "node --import tsx --test tests/*.test.ts",
+    "typecheck:tests": "tsc -p tests/tsconfig.json"
+  }
+}

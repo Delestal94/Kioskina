@@ -1,0 +1,17 @@
+{
+  "name": "@kioskina/local-store",
+  "private": true,
+  "version": "0.0.0-spike",
+  "type": "module",
+  "exports": "./src/index.ts",
+  "types": "./src/index.ts",
+  "dependencies": {
+    "@kioskina/application": "0.0.0-spike",
+    "@kioskina/event-contracts": "0.0.0-spike",
+    "@kioskina/spike-domain": "0.0.0-spike",
+    "pouchdb-browser": "9.0.0"
+  },
+  "devDependencies": {
+    "@types/pouchdb": "6.4.2"
+  }
+}

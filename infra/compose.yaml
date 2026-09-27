@@ -1,0 +1,15 @@
+services:
+  couchdb:
+    image: ${COUCHDB_IMAGE:?Configure COUCHDB_IMAGE en .env}
+    restart: unless-stopped
+    environment:
+      COUCHDB_USER: ${COUCHDB_USERNAME:?Configure COUCHDB_USERNAME en .env}
+      COUCHDB_PASSWORD: ${COUCHDB_PASSWORD:?Configure COUCHDB_PASSWORD en .env}
+    ports:
+      - "127.0.0.1:${COUCHDB_HOST_PORT:?Configure COUCHDB_HOST_PORT en .env}:5984"
+    volumes:
+      - couchdb-data:/opt/couchdb/data
+      - ./couchdb/single-node.ini:/opt/couchdb/etc/local.d/single-node.ini:ro
+
+volumes:
+  couchdb-data:
