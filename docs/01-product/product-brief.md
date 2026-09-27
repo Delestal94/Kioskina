@@ -1,7 +1,7 @@
 # Brief de producto
 
 - Estado: **Borrador**
-- Última actualización: 2026-09-20
+- Última actualización: 2026-09-27
 
 ## Visión provisional
 
@@ -35,6 +35,7 @@ Los comercios pequeños que aún trabajan con registros en papel o software anti
 - Uso posible mediante pantalla táctil sin teclado ni lector.
 - Compatibilidad aspiracional con teléfono, tableta y computadora, sujeta a una matriz de soporte verificable.
 - Interfaz con botones grandes, pocas opciones simultáneas y ayudas contextuales.
+- Dirección visual confirmada por el fundador el 2026-09-27: limpia, sencilla, moderna y minimalista, sin ocultar información necesaria para vender, cobrar o corregir errores.
 - Preparación para incorporar más idiomas.
 
 ## Indicadores de éxito registrados para la línea base propuesta
@@ -70,3 +71,5 @@ El fundador aceptó las siguientes metas como objetivos del piloto. Aún no son 
 ## Pendiente de validar
 
 Comercio/localidad piloto, precios del modelo comercial, permisos predeterminados finales, restricciones fiscales particulares del piloto, modelos de dispositivo, integraciones con proveedor y ratificación de las métricas para la línea base.
+
+

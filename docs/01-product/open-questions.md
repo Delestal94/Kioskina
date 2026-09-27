@@ -11,7 +11,7 @@ Las decisiones ya resueltas se trasladaron a `resolved-decisions.md`. Las respue
 | Q-005 | ¿Qué hardware e integraciones son obligatorios en el piloto? | Define viabilidad, pruebas y plataforma cliente. | Fundador | Parcial: dispositivo con navegador; periféricos opcionales, modelos pendientes |
 | Q-007 | ¿Qué métricas cuantitativas definirán éxito, confiabilidad y adopción en el primer año? | Permite evaluar el producto objetivamente. | Fundador | Abierta |
 | Q-008 | ¿Qué comercios y usuarios reales participarán en investigación y piloto? | Reduce el riesgo derivado de la experiencia sectorial limitada. | Fundador | Investigación previa descartada; el equipo hará pruebas internas iniciales; comercio y usuarios externos del piloto aún por identificar |
-| Q-009 | ¿Cuál será la matriz mínima de dispositivos, sistemas operativos, navegadores y tamaños soportados? | Convierte “cualquier dispositivo” en una promesa comprobable. | Producto/Técnica | Parcial: Chrome/Edge en Windows/Android son objetivo candidato; el equipo confirma tener equipos disponibles, pero modelos/versiones/navegadores aún no documentados |
+| Q-009 | ¿Cuál será la matriz mínima de dispositivos, sistemas operativos, navegadores y tamaños soportados? | Convierte “cualquier dispositivo” en una promesa comprobable. | Producto/Técnica | Parcial: primera entrega interna en una computadora Windows con Chrome y Edge confirmada el 2026-09-27; versiones, modelo y tamaños pendientes; Android y segunda caja sujetos a revisión de alcance |
 | Q-012 | ¿Qué requisitos fiscales y de protección de datos aplican al piloto argentino? | Condiciona comprobantes, almacenamiento e integraciones. | Legal/Contable | Abierta |
 | Q-013 | ¿Qué proveedor permitirá verificar transferencias o QR y cómo se concilian estados tardíos? | Define viabilidad y experiencia del cobro automático. | Producto/Técnica | Abierta |
 | Q-014 | ¿Cuáles son los campos mínimos y el flujo de revisión para productos creados en caja? | Evita catálogo duplicado o fiscalmente incompleto. | Producto/Comercios piloto | Abierta |
@@ -34,7 +34,7 @@ Las decisiones ya resueltas se trasladaron a `resolved-decisions.md`. Las respue
 | Q-033 | ¿Qué modelos reales integrarán la primera matriz de hardware probado? | Limita compatibilidad y permite pruebas reproducibles. | Comercios piloto/Técnica | Abierta |
 | Q-034 | ¿Qué obligaciones de garantía y reemplazo asumirá Kioskina al vender equipos? | Define costo y riesgo comercial. | Fundador/Legal/Operaciones | Abierta |
 | Q-035 | ¿El prototipo valida clientes autónomos con coordinador remoto conforme ADR-0001? | Confirma topología, sincronización, respaldo y seguridad. | Técnica | ADR-0001 a ADR-0003; prototipo pendiente |
-| Q-036 | ¿Qué navegadores, versiones, dispositivos y tamaños exactos se soportarán en el piloto? | Hace comprobable la promesa web. | Técnica/Comercio piloto | Parcial: Chrome/Edge en Windows/Android; equipo disponible, modelos/versiones/navegadores aún no documentados |
+| Q-036 | ¿Qué navegadores, versiones, dispositivos y tamaños exactos se soportarán en el piloto? | Hace comprobable la promesa web. | Técnica/Comercio piloto | Parcial: Chrome y Edge sobre una computadora Windows confirmados para pruebas internas; versiones/modelo/tamaño pendientes; piloto real posterior sin matriz aprobada |
 | Q-037 | Si los parches críticos no son obligatorios, ¿cuántas versiones se soportan y qué conectividad se restringe por vulnerabilidad/incompatibilidad? | Controla seguridad y costo operativo. | Técnica/Producto | Parcial: gratuitos, no obligatorios |
 | Q-038 | ¿Cuáles son los SLA medibles por severidad? | Convierte “a la brevedad” en una promesa sostenible. | Operaciones/Fundador | Abierta |
 | Q-039 | ¿Cómo cumplirá el comercio su facturación fiscal mientras Kioskina no la integre? | Evita incumplimiento o confusión del ticket interno. | Fundador/Especialista fiscal | Abierta |
@@ -46,5 +46,13 @@ Las decisiones ya resueltas se trasladaron a `resolved-decisions.md`. Las respue
 | Q-046 | ¿Cómo obtiene una exportación o ejerce derechos el dueño después del bloqueo de prueba? | El bloqueo comercial no puede anular obligaciones sobre datos. | Producto/Legal | Abierta: exportación en UI rechazada |
 | Q-047 | ¿PouchDB/CouchDB supera el spike de durabilidad, conflicto, migración y seguridad sin licencias pagas? | Decide si el candidato técnico puede pasar a producción. | Técnica | Abierta; ADR-0002 condicionado |
 | Q-048 | ¿Qué RPO/RTO y política de copias se ofrecerán en el piloto? | Define recuperación real y promesas comerciales. | Producto/Técnica | Valores candidatos ratificados por el fundador el 2026-09-26 para la línea base; validar viabilidad, cobertura por plan y evidencia en el spike |
+| Q-049 | Tras la solicitud de ampliar el MVP, ¿qué funciones concretas entran en la primera entrega y cuáles dependen de proveedor, hardware o validación externa? | «Todas las funcionalidades que puedas» no permite establecer criterios de aceptación ni una puerta de entrega. | Fundador/Producto | Línea base de desarrollo interno aprobada el 2026-09-27; alcance comercial y funciones restantes aún sujetos a priorización/revisión |
+| Q-050 | ¿La primera versión para una computadora Windows debe funcionar sólo en ese equipo, o conservar desde el inicio la capacidad de incorporar otra caja mediante coordinador? | Determina si se mantiene o revisa ADR-0001 a ADR-0003 y el spike de sincronización. | Fundador/Técnica | Abierta; un equipo inicial confirmado el 2026-09-27 |
+| Q-051 | ¿Qué versión de Windows y de Chrome/Edge y qué periféricos concretos se usarán para probar la primera entrega? | Permite una matriz de compatibilidad reproducible y verificable. | Fundador/Técnica | Parcial: Chrome y Edge sobre Windows confirmados el 2026-09-27. En el equipo que aloja este repositorio se observó Windows versión 25H2, compilación 26200; Chrome 153.0.8010.53 y Edge 153.0.4234.48. Falta confirmar que éste sea el equipo de referencia y registrar periféricos. |
 
 Las preguntas detalladas se mantienen en `../00-discovery/questionnaire.md`. Esta tabla resume sólo las que bloquean decisiones principales.
+
+
+
+
+

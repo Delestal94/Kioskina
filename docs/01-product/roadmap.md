@@ -3,6 +3,8 @@
 - Estado: **Propuesto; sin fechas comprometidas**
 - Fecha: 2026-09-20
 
+**Revisión de entrega interna (2026-09-27):** el fundador aprobó iniciar una primera entrega amplia para una computadora Windows con datos ficticios. Su implementación local inicial está disponible y se sigue verificando. La secuencia de piloto comercial con dos cajas descrita abajo se conserva como propuesta anterior; la entrega interna y el eventual piloto real tienen puertas de aceptación distintas.
+
 El roadmap usa puertas de evidencia, no fechas arbitrarias. No implica construir todas las capacidades de visión.
 
 ## Fase 0 — Cerrar línea base

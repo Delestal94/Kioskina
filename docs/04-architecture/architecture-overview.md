@@ -37,10 +37,6 @@ Cada PWA contiene interfaz, lógica de aplicación, base local y cola de cambios
 | Outbox/sync | Reintentos, checkpoints, recepción y conflictos | Idempotencia por identificador de evento |
 | Estado de salud | Conectividad, cuota, última sincronización y conflictos | Visible sin alarmas ambiguas |
 
-El scaffold del spike aplica separación explícita por capas: `packages/application` contiene el caso de uso de sincronización y sus puertos; `packages/local-store` adapta la outbox local; `apps/client/src/infrastructure` adapta el contrato HTTP; React coordina estado de pantalla y presenta resultados. Los contratos compartidos están en `packages/event-contracts`. La nota sintética de persistencia sigue siendo exclusiva del spike y no representa una regla de negocio del POS.
-
-En el spike, los recorridos de eventos son paginados con `CLIENT_LOCAL_SCAN_PAGE_SIZE` y el tamaño de envío se controla con `CLIENT_SYNC_BATCH_SIZE`. La paginación limita memoria, pero el store todavía recorre documentos para contar pendientes y determinar la secuencia. Antes de cargas comerciales se debe medir y decidir un índice local adecuado; la paginación por sí sola no demuestra escalabilidad de lectura.
-
 ## Dominios
 
 - Identidad, comercio, sucursal, caja, dispositivo, rol y permiso.

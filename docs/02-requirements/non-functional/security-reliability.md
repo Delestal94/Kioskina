@@ -49,7 +49,6 @@
 - Origen: entrevista 07
 - Prioridad: candidata a MVP
 - Criterio verificable preliminar: soportar al menos dos cajas concurrentes, dos empleados, 2.000 artículos y 100 ventas diarias con margen de prueba pendiente de fijar.
-- Criterio técnico del spike: paginar la lectura local para limitar memoria y registrar mediciones de lectura/escritura; no se considera validada la capacidad hasta ejecutar T-STORAGE-001 y las mediciones de carga acordadas.
 
 ### RNF-009 — Disponibilidad operativa continua
 
@@ -62,7 +61,6 @@
 - Origen: entrevista 07
 - Prioridad: candidata a MVP
 - Criterio verificable preliminar: todos los flujos críticos pasan pruebas en la matriz publicada de navegadores, versiones, tamaños, entrada táctil y dispositivos.
-- Criterio del spike: la PWA instalada puede volver a abrir su shell previamente descargado sin red; credenciales y respuestas de la API no se guardan en caché de recursos.
 
 ### RNF-011 — Despliegue reversible
 
@@ -87,7 +85,6 @@
 - Origen: entrevista 10 y ADR-0001
 - Prioridad: obligatoria
 - Criterio verificable preliminar: después de restablecer conexión y procesar los mismos eventos, todos los nodos alcanzan los mismos resultados de ventas, caja y stock sin pérdida ni duplicación; conflictos no combinables quedan explícitos.
-- Criterio adicional del spike: el cliente sólo retira de la outbox los eventos cuyo recibo se valida contra el lote enviado; IDs duplicados, faltantes o inesperados conservan los eventos como pendientes.
 
 ### RNF-015 — Durabilidad local
 
@@ -95,13 +92,15 @@
 - Prioridad: obligatoria
 - Criterio verificable preliminar: cerrar navegador, reiniciar dispositivo o sufrir un fallo durante una escritura no elimina eventos confirmados ni deja movimientos parciales; la prueba se ejecuta con la cuota y plataforma mínimas soportadas.
 
-### RNF-016 — Configuración externa sin datos comerciales incrustados
+### RNF-016 — Claridad y consistencia de la interfaz
 
-- Origen: instrucción del fundador, 2026-09-26
-- Prioridad: obligatoria
+- Origen: dirección visual del fundador del 2026-09-27; `docs/03-ux/principles.md`.
+- Prioridad: propuesta para la primera entrega interna.
+- Descripción: la interfaz debe ser limpia, sencilla, moderna y minimalista sin ocultar datos ni controles necesarios para operar con seguridad.
 - Criterios de aceptación:
-  1. Identidad de comercio, sucursal, dispositivo y actor, nombre de aplicación y endpoints se suministran mediante configuración del entorno; no se incorporan valores reales al código ni al bundle web.
-  2. El cliente valida la configuración antes de iniciar y falla de forma comprensible si falta un valor o su formato es inválido.
-  3. Ningún secreto del coordinador se entrega al cliente ni se guarda en el repositorio.
-  4. Tokens y credenciales locales se mantienen fuera de Git; los valores del ejemplo son vacíos o no sensibles.
-  5. Identificadores operativos, endpoints y límites de sincronización se pueden cambiar mediante `runtime-config.json` sin recompilar el bundle; branding/manifest se genera por separado desde `APP_*` para cada entorno.
+  - En venta y caja, la acción principal, el total, el medio de pago, el usuario/turno activo y el estado de la operación se identifican sin abrir ajustes ni depender sólo del color.
+  - Títulos, etiquetas, espaciado, controles y patrones de confirmación/error son consistentes entre venta, catálogo, stock, clientes y reportes.
+  - Las opciones avanzadas no compiten visualmente con el flujo habitual y se encuentran mediante una ruta visible y comprensible.
+  - Las pantallas conservan lectura y operación con zoom al 200 % y entrada por teclado en Chrome y Edge de la matriz de pruebas; no se pierde información o acción crítica.
+- Dependencias: principios UX, RNF-010, RF-001, RF-006, RF-010, RF-060 y matriz Windows/navegadores pendiente de cerrar.
+- Prueba relacionada: T-UX-001 y T-A11Y-001.

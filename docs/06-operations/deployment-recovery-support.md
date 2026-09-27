@@ -3,6 +3,10 @@
 - Estado: **Valores candidatos para línea base ratificados el 2026-09-26; validación técnica y condiciones comerciales pendientes**
 - Fecha: 2026-09-20
 
+## Operación de la entrega interna Windows (2026-09-27)
+
+La aplicación de prueba se ejecuta con Vite sobre localhost y usa IndexedDB del navegador. Chrome y Edge conservan bases distintas; no existe sincronización entre ambas. Desde Configuración, el dueño descarga una copia JSON y puede restaurarla con confirmación; el archivo contiene datos y hashes de credenciales. Usar sólo datos ficticios y guardar la copia fuera de la PC. El código permite restaurar una copia validada, pero un simulacro manual en Chrome y Edge, con cierre/reapertura y pérdida de almacenamiento, sigue pendiente. Las metas de RPO/RTO del coordinador descritas abajo no aplican a esta entrega local. La entrega comercial exige una política automática de copias, seguridad y recuperación revisada.
+
 ## Entornos
 
 - Desarrollo local con datos sintéticos.
@@ -11,18 +15,6 @@
 - Producción piloto con un comercio y credenciales separadas.
 
 Nunca se reutilizan secretos ni bases entre entornos.
-
-### Arranque del scaffold local-first
-
-El README del repositorio describe el arranque local de CouchDB, gateway y cliente. `.env.example` contiene sólo valores de desarrollo no secretos; `.env` es local e ignorado por Git. El runtime público generado para el cliente contiene configuración operativa no secreta. No incluir en él contraseñas CouchDB ni tokens del coordinador. El procedimiento todavía no tiene evidencia de ejecución integral.
-
-El service worker del scaffold mantiene shell y assets estáticos descargados para apertura offline. La configuración runtime se actualiza por red con fallback a la última copia local. El service worker no intercepta métodos de escritura ni cachea rutas arbitrarias de API. La política de actualización y la compatibilidad de esquema deberán probarse antes de usarlo con operaciones comerciales.
-
-La herramienta NDJSON es sólo de laboratorio, requiere credenciales locales del coordinador y un tenant sintético explícito. Crea una salida nueva sin sobrescribir y limpia archivos parciales ante fallos normales. Solicita modo `0600`; la protección efectiva depende de los permisos del sistema de archivos (en Windows, de la ACL del directorio). Guardar la salida fuera del repositorio, en un directorio restringido. Detener escrituras durante la extracción. No sustituye la exportación segura, autenticada y autorizada requerida por RF-052; Q-046 sigue abierta para el flujo tras el bloqueo de prueba.
-
-Para promover un mismo bundle entre entornos, `@kioskina/client` ofrece `configure:static`: con las variables de cada entorno, puede generar `runtime-config.json`, manifiesto e icono en la carpeta indicada por `CLIENT_PUBLIC_OUTPUT_DIR` (por ejemplo, la carpeta estática ya construida). Las credenciales del gateway no deben incluirse en esas variables públicas.
-
-En modo desarrollo Vite sirve módulos fuente; esa configuración no prueba la apertura offline del paquete instalado. T-PWA-001 debe ejecutarse sobre el build distribuible en un navegador de la matriz.
 
 ## Entrega de la PWA
 
@@ -37,7 +29,6 @@ En modo desarrollo Vite sirve módulos fuente; esa configuración no prueba la a
 - Gateway y CouchDB no se publican con credenciales predeterminadas.
 - TLS, secretos externos a imágenes, principio de mínimo privilegio y red restringida.
 - Salud de gateway, cola, rechazos, conflictos, espacio, backup y versión se monitorean.
-- El endpoint `/health` verifica que la base CouchDB configurada responda; la UI separa la conectividad del navegador de la disponibilidad del coordinador.
 - Alertas no incluyen nombres, teléfonos, productos vendidos ni importes salvo diagnóstico autorizado y necesario.
 
 ## Respaldo y recuperación
@@ -88,3 +79,4 @@ Cobertura candidata ya declarada: lunes, miércoles y viernes de 09:00 a 21:00, 
 ## Prueba vencida y datos
 
 El bloqueo comercial puede impedir operación, pero no debe destruir datos ni bloquear derechos legales. Como el fundador rechazó exportación desde la UI después del vencimiento, deberá existir un proceso de soporte autenticado para exportación/derechos y una política comunicada de retención. Este punto sigue abierto y bloquea términos comerciales definitivos.
+

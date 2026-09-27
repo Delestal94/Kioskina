@@ -1,16 +1,4 @@
 node_modules/
-.npm-cache/
-*.tsbuildinfo
-.test-output/
 dist/
 coverage/
-.env
-.env.*
-!.env.example
-/apps/client/public/runtime-config.json
-/apps/client/public/manifest.webmanifest
-/apps/client/public/icon.svg
-.DS_Store
-*.log
-*.ndjson
-*.partial
+*.local

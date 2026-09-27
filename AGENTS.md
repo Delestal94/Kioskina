@@ -35,4 +35,4 @@ Una tarea no está terminada si cambió el comportamiento y no se actualizaron, 
 
 ## Estado actual
 
-El proyecto está en descubrimiento. No comenzar implementación hasta que `docs/00-discovery/discovery-status.md` indique que existe una línea base aprobada.
+La entrega interna con datos ficticios tiene una línea base de desarrollo aprobada por instrucción del fundador del 2026-09-27; consultar el alcance y los límites en `docs/00-discovery/discovery-status.md`. La aprobación conjunta y los requisitos para un piloto con datos o ventas reales siguen pendientes. No ampliar silenciosamente la autorización interna a operación comercial.

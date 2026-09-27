@@ -4,6 +4,8 @@
 - Fecha: 2026-09-26
 - Fuente: criterios de `discovery-status.md`, requisitos, riesgos, ADR y preguntas abiertas.
 
+La decisión del 2026-09-27 aprobó iniciar una primera entrega interna con datos ficticios en una computadora Windows con Chrome y Edge, conforme ADR-0004. Las puertas de fiscalidad, privacidad, sincronización y comercio piloto siguen pendientes para cualquier operación posterior con datos o ventas reales; la lista siguiente conserva esas puertas futuras.
+
 Esta lista convierte las condiciones existentes de cierre en evidencia revisable. Un punto puede cerrarse con una decisión de alcance explícita o con evidencia; no se cierra por silencio. Las capacidades fuera del MVP pueden permanecer abiertas si quedan excluidas con responsable y etapa futura.
 
 | Puerta | Evidencia/decisión necesaria | Referencias | Estado actual |
@@ -36,3 +38,10 @@ Esta lista convierte las condiciones existentes de cierre en evidencia revisable
 ## Criterio de salida
 
 Sólo marcar `Línea base aprobada: Sí` cuando cada puerta necesaria para construir el MVP tenga decisión o evidencia trazable, las dependencias legales/técnicas bloqueantes estén resueltas o excluidas de manera explícita, los riesgos residuales tengan aceptación/responsable/mitigación, y la aprobación de las personas fundadoras quede registrada. Una lista de preguntas abiertas no impide por sí sola la aprobación si no afecta el alcance aprobado y tiene etapa futura asignada.
+
+
+
+
+
+
+

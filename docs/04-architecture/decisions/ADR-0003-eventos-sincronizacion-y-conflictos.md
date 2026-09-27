@@ -20,7 +20,6 @@ Dos cajas pueden vender y editar ciertos datos durante una partición de 24 hora
 8. Precio, permisos y configuración nunca se resuelven silenciosamente. Un administrador elige el valor futuro; ventas pasadas conservan lo aplicado.
 9. Resoluciones, reversiones y rectificaciones agregan nuevos registros y no alteran el original.
 10. Una migración no puede descartar eventos pendientes; se valida antes de activar la nueva aplicación.
-11. El protocolo candidato descarga cambios mediante páginas con cursor opaco del coordinador. El consumidor aplica eventos idempotentemente y persiste el cursor después de completar la página; el motor no define un orden causal global entre dispositivos.
 
 ## Estados de sincronización
 
@@ -34,7 +33,6 @@ Un evento rechazado no desaparece. Queda en una bandeja de resolución con causa
 - No se usa la hora del dispositivo como criterio único para ganar conflictos.
 - La recepción central sirve para diagnóstico, no para reescribir el momento informado de la operación.
 - Si faltan secuencias, la sincronización solicita reenvío antes de declarar convergencia.
-- El spike calcula huecos y secuencias duplicadas sobre los eventos locales conocidos por dispositivo y sucursal. Hasta que exista recuperación automática del emisor, sólo informa la anomalía y no presenta convergencia confirmada; el recálculo tras cada página permite resolver un hueco cuando el evento llega después.
 
 ## Seguridad e integridad
 
@@ -46,8 +44,6 @@ Un evento rechazado no desaparece. Queda en una bandeja de resolución con causa
 ## Consecuencias
 
 - Se preservan operaciones aun con duplicados de transporte y particiones.
-- Una caída a mitad de página puede repetir escrituras ya aplicadas; deduplicación local por ID evita repetirlas y el cursor no se adelanta. Esta mecánica sigue pendiente de validación en el spike.
-- La detección local no recupera por sí sola un evento ausente del coordinador ni detecta secuencias faltantes que nunca se hayan observado; automatizar la solicitud al emisor queda como trabajo futuro.
 - Informes y saldos requieren proyectores y reconciliación.
 - Algunas pantallas verán datos temporalmente antiguos y deben mostrarlo.
 - La resolución de conflictos es parte visible del producto administrativo.

@@ -3,6 +3,10 @@
 - Estado: **Propuesta para línea base**
 - Fecha: 2026-09-20
 
+La primera entrega interna solicitada el 2026-09-27 se evaluará en Chrome y Edge sobre una computadora Windows con datos ficticios. La matriz de dos cajas y Android descrita más abajo corresponde al spike/piloto candidato anterior y se revisará al aprobar la nueva línea base.
+
+Evidencia automatizada inicial (2026-09-27): `npm test` aprueba 12 pruebas de dominio, CSV y persistencia simulada, incluidas doble confirmación, permisos, ajuste compensatorio, anulación, fiado/caja, descuento y aborto de transacción. `npm run build` compila TypeScript y genera la PWA. `npm audit` informó 0 vulnerabilidades en el conjunto instalado. Inicio, venta y catálogo se inspeccionaron visualmente en el navegador integrado; faltan E2E manuales en Chrome y Edge, zoom 200 %, recuperación tras cierre forzado y simulacro real de restauración. La simulación con `fake-indexeddb` no prueba durabilidad de disco de los navegadores.
+
 ## Principios
 
 - Probar invariantes y fallos, no sólo caminos felices.
@@ -25,10 +29,6 @@
 | Seguridad | Abuso y aislamiento | autorización negativa, replay, revocación, soporte temporal |
 | Operación | Despliegue y recuperación | backup, restore, rollback, pérdida de dispositivo |
 
-## Integración continua del spike
-
-`.github/workflows/ci.yml` automatiza en GitHub los typechecks y builds del monorepo con Node fijado por `.nvmrc`. El runner sólo tiene permiso de lectura y compila el cliente con identidad sintética. No ejecuta suites de comportamiento. La suite de sincronización permanece definida aparte; la CI tampoco reemplaza CouchDB, navegadores/hardware reales, particiones de 24 horas, restore ni revisión manual de seguridad. No despliega ni publica.
-
 ## Suites críticas iniciales
 
 | ID | Escenario | Resultado esperado |
@@ -36,16 +36,8 @@
 | T-SYNC-001 | Dos cajas venden offline 24 h y reconectan | Mismos eventos/proyecciones, sin pérdidas ni duplicados |
 | T-SYNC-002 | Reenvío y entrega fuera de orden | Un efecto por evento; faltantes detectados |
 | T-SYNC-003 | Precio concurrente | Conflicto visible y resolución futura sin cambiar ventas |
-| T-SYNC-004 | Gateway responde con IDs faltantes, repetidos o extraños | El cliente no marca eventos como aceptados si los recibos no coinciden exactamente con el lote enviado |
-| T-SYNC-005 | Descarga incremental repetida o interrumpida durante aplicación local | Eventos idempotentes; el cursor sólo avanza tras aplicar la página; la siguiente descarga no omite cambios |
-| T-SYNC-006 | Huecos o secuencias duplicadas en eventos de un dispositivo | La anomalía se informa y no se declara convergencia; al completar el hueco, el estado se recalcula |
-| T-SYNC-007 | Evento con tipo o versión futura/desconocida | Rechazo antes de persistir y sin adelantar el cursor |
-| T-SYNC-008 | Salud del coordinador | La UI no reporta sincronización disponible si CouchDB no responde; falta validar contra CouchDB real |
-| T-SYNC-009 | Sincronizar venta del spike | Dos nodos reciben el mismo evento sin duplicar su identidad; no prueba proyecciones comerciales |
 | T-SALE-001 | Doble toque en confirmar | Una venta, un cobro y un conjunto de movimientos |
 | T-SALE-002 | Cierre forzado en cada punto de confirmación | Venta completa recuperable o ningún efecto parcial |
-| T-SALE-003 | Importe de venta en enteros | Vuelto exacto con dos decimales; rechazo de pago insuficiente y precisión no admitida |
-| T-SALE-004 | Reintento de confirmación local | Mismo ID/contenido devuelve venta previa; otro contenido no duplica ni modifica |
 | T-STOCK-001 | Venta supera stock conocido | Ajuste exacto + salida, saldo cero y advertencia posterior |
 | T-CASH-001 | Dos usuarios/turnos | Movimientos y diferencias atribuidos correctamente |
 | T-AUTH-001 | Aplicar matriz inicial a cajero, encargado y dueño/administrador; probar asignaciones acumuladas y acciones no definidas desde UI, API y exportación | Denegación por defecto sin mutación y auditoría segura; autorizaciones con actor, autorizador y motivo |
@@ -54,11 +46,7 @@
 | T-BACKUP-001 | Restauración mensual del coordinador desde copias completas e incrementales | Verificar integridad y cumplimiento del RPO central ≤15 min y RTO ≤4 h; registrar desviaciones; las operaciones no sincronizadas quedan excluidas |
 | T-MIG-001 | Actualización con eventos pendientes | Migración conserva datos o se revierte de forma segura |
 | T-A11Y-001 | Venta táctil sin teclado/lector | Flujo completo, objetivos accesibles y mensajes entendibles |
-| T-CONFIG-001 | Configuración externa incompleta, inválida y válida | Falla cerrada sin exponer secretos; los valores de comercio/dispositivo provienen del runtime y no del bundle |
-| T-CONFIG-002 | Cuerpo de solicitud excede el límite configurado del gateway | Rechazo previo a persistencia con tamaño límite obtenido de configuración externa |
-| T-PWA-001 | Confirmar control del Service Worker y carga de assets; abrir online para refrescar shell, detener servidor y recargar; volver online y repetir tras una nueva versión | Shell y assets de la revisión más reciente se abren desde caché; estado del coordinador refleja falta de red; llamadas de API no se interceptan ni guardan |
-| T-STORAGE-001 | Outbox sintética mayor a una página | Secuencias, conteo y extracción por lote recorren páginas sin cargar todos los documentos a memoria; no omiten ni repiten eventos |
-| T-EXPORT-TECH-001 | Exportar eventos sintéticos de un tenant con escritores detenidos | NDJSON contiene sobres canónicos, excluye metadatos/otros tenants, pagina resultados, valida ID documento/sobre, no sobrescribe salida y limpia fallos normales |
+| T-UX-001 | Revisión de venta, caja, catálogo, stock, clientes y reportes en Chrome y Edge con datos ficticios; repetir venta y corrección de error con zoom al 200 % y teclado | Jerarquía y etiquetas consistentes, acción principal y datos críticos visibles, opciones avanzadas localizables y ninguna acción crítica perdida; registrar hallazgos y correcciones |
 
 ## Matriz mínima de ejecución del spike
 
@@ -90,3 +78,5 @@ Las versiones exactas y equipos se registran como evidencia al ejecutar; “actu
 ## Evidencia
 
 Cada ejecución liberable conservará versión, ambiente, dispositivo/navegador, conjunto de datos, resultados, logs sanitizados y defectos vinculados. La matriz de trazabilidad enlazará requisito → regla/ADR → prueba → evidencia.
+
+

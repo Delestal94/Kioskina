@@ -36,7 +36,6 @@ La ausencia de bloqueo automático es un riesgo aceptado provisionalmente, no un
 - Alta de dispositivo autorizada y revocable, con credencial propia distinta de la del usuario.
 - TLS para todo tráfico remoto y tokens de acceso breves con renovación controlada.
 - Gateway con validación de tenant, sucursal, dispositivo, usuario y tipo de documento/evento.
-- El gateway impone un máximo configurable de bytes por solicitud antes de parsear JSON, además del máximo de eventos por lote; un lote grande o payload excesivo se rechaza sin persistir.
 - Protección contra repetición mediante ID, clave de idempotencia y secuencia de dispositivo.
 - Ningún secreto de proveedor o credencial maestra dentro del bundle PWA.
 - Solicitar almacenamiento persistente, vigilar cuota y advertir si el navegador puede desalojar datos.
@@ -61,3 +60,4 @@ El dueño emite una concesión temporal con alcance y vencimiento. El agente usa
 - Revisión de dependencias y SBOM.
 - Simulación de versión vulnerable/incompatible y política de corte de sincronización.
 - Procedimiento de incidente, notificación y preservación de evidencia.
+

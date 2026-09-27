@@ -4,44 +4,37 @@ Plataforma de gestión para kioscos, drugstores y maxikioscos, concebida para ab
 
 ## Estado
 
-La línea base de producto todavía no fue aprobada. Está en curso un spike técnico descartable para reducir riesgos de la arquitectura local-first; no debe tratarse como producto ni como validación de producción.
+La primera versión interna de una caja Windows está en desarrollo y puede probarse con datos ficticios. La autorización de esta entrega está en `docs/00-discovery/discovery-status.md` y el alcance en `docs/01-product/mvp-scope.md`. La operación con ventas o datos reales, la sincronización entre cajas y la comercialización no están aprobadas.
 
-## Cómo continuar
+## Ejecutar localmente
 
-1. Leer el estado y el orden documental de `docs/README.md`.
-2. Completar el spike descrito en `docs/07-delivery/work-packages/spike-arquitectura-local-first.md`.
-3. Revisar ADR, dependencias, recuperación y compatibilidad.
-4. Resolver los bloqueantes del piloto y aprobar la línea base antes de iniciar el producto.
+Requiere Node.js compatible con Vite y npm. En esta etapa se probó con Node.js 24, Chrome y Edge instalados en Windows.
 
-## Estructura técnica del spike
+```powershell
+npm ci
+npm run dev
+```
 
-- `apps/client`: interfaz web con configuración de runtime externa.
-- `apps/sync-gateway`: API de sincronización; credenciales exclusivamente locales/de prueba.
-- `packages/event-contracts`: contratos versionados compartidos.
-- `packages/application`: casos de uso y puertos sin dependencias de UI ni persistencia concreta.
-- `packages/spike-domain`: tipos y reglas descartables del spike.
-- `packages/local-store`: almacenamiento local y outbox candidata.
-- `infra`: entorno local parametrizado para el coordinador candidato.
+Abrir la dirección local que indique Vite. En el primer ingreso, crear el comercio ficticio y la cuenta de dueño. Cada navegador tiene almacenamiento independiente: los datos creados en Chrome no aparecen automáticamente en Edge. Para probar la versión compilada:
 
-Los identificadores de comercio, sucursal, dispositivo y actor no se fijan en el código. Completá `.env` a partir de `.env.example` con valores sintéticos locales. Nunca se deben agregar secretos al repositorio.
+```powershell
+npm run build
+npm run preview
+```
 
-## Inicio local del spike
+La instalación web sin conexión se prepara al abrir la versión compilada mientras hay conexión al servidor local. El servidor que entrega la aplicación debe seguir disponible para nuevas instalaciones y actualizaciones. `npm test` ejecuta las pruebas del dominio, CSV y persistencia local.
 
-1. Copiá `.env.example` como `.env` y completá los identificadores sintéticos, la contraseña local de CouchDB y una credencial temporal de spike.
-2. Iniciá el coordinador local: `docker compose --env-file .env -f infra/compose.yaml up -d`.
-3. En una terminal, ejecutá `npm run dev:gateway`.
-4. En otra terminal, ejecutá `npm run dev:client`.
+## Funciones disponibles en esta entrega
 
-La sincronización de prueba requiere que el token del cliente coincida con el token y el alcance configurados en `SYNC_CLIENT_CREDENTIALS_JSON`. Estas instrucciones son para desarrollo local y aún no se validaron mediante una ejecución completa. El shell offline debe evaluarse con el build instalable; Vite en modo desarrollo no forma parte de la garantía offline.
+- Venta en efectivo, transferencia/QR manual y fiado, con pagos combinados y descuento autorizado.
+- Turnos, arqueo de efectivo, stock y ajustes, catálogo, clientes, cobro de fiado y reportes diarios.
+- Usuarios con roles iniciales, auditoría, importación/exportación de productos CSV, copia JSON y restauración.
+- Interfaz en español, adaptable y utilizable sin periféricos.
 
-### Build instalable para revisión interna
+La información se guarda en IndexedDB del navegador. Descargar copias regularmente y conservarlas fuera de esa computadora. La copia JSON contiene los datos y los hashes de las credenciales; sólo se debe usar con datos ficticios en esta etapa. No hay sincronización entre navegadores ni dispositivos.
 
-`npm run build:client` genera el build web de este spike con la configuración pública indicada en `.env`. Para revisarlo localmente, ejecutá `npm run preview:client`; el host y puerto provienen de `VITE_CLIENT_HOST` y `VITE_CLIENT_PREVIEW_PORT`. Es una vista previa local del prototipo, no una release del POS ni un servidor de producción.
+## Próximas puertas
 
-Para el spike se puede exportar desde el coordinador un tenant sintético a un archivo NDJSON nuevo con `npm run export:events --workspace @kioskina/sync-gateway -- <tenant-sintético> <archivo.ndjson>`. Guardá el archivo fuera del repositorio en un directorio restringido. Es una herramienta técnica local, no un flujo de exportación para el dueño. Detené el gateway y cualquier escritor antes de exportar; el proceso de soporte y autorización de RF-052 sigue pendiente.
-
-### Validación continua
-
-`.github/workflows/ci.yml` corre en cada push a `main`, pull request y ejecución manual. Usa Node de `.nvmrc`, instala desde el lockfile y ejecuta chequeos de tipos y builds. El job usa una identidad local `*-ci`, permisos de lectura y no despliega. No ejecuta pruebas de comportamiento. Un resultado verde no equivale a validar CouchDB real, navegadores Windows/Android ni una release del POS; el alcance está en `docs/07-delivery/work-packages/continuous-integration-spike.md`.
+Completar pruebas manuales en Chrome y Edge del equipo de referencia, simulacro de restauración y revisión de accesibilidad. Antes de una segunda caja se ejecuta el spike de ADR-0001 a ADR-0003. Antes de cualquier venta o dato real se cierran las decisiones fiscales, de privacidad, seguridad y operación indicadas en `docs/00-discovery/discovery-closure-checklist.md`.
 
 Toda persona o agente de IA debe comenzar leyendo `AGENTS.md` y `docs/README.md`.

@@ -2,6 +2,8 @@
 
 - Estado: **Borrador; pendiente de pruebas con usuarios**
 
+Dirección confirmada por el fundador el 2026-09-27: interfaz limpia, sencilla, moderna y minimalista. En Kioskina esto significa una jerarquía visual consistente, texto directo, poco ruido decorativo y opciones secundarias disponibles cuando se necesitan. La información crítica para cobrar, identificar el usuario activo, detectar errores y recuperar una operación debe seguir visible y comprensible. La estética concreta se evaluará con pantallas y pruebas; estos adjetivos no fijan por sí solos colores, fuentes ni componentes.
+
 1. La venta cotidiana debe mostrar sólo las decisiones necesarias en ese momento.
 2. Los objetivos táctiles deben ser grandes, estar separados y funcionar sin precisión fina.
 3. Los flujos esenciales deben completarse sin teclado ni lector de códigos.
@@ -12,9 +14,6 @@
 8. La interfaz se preparará para traducciones sin texto incrustado ni diseños dependientes de una longitud fija.
 9. La accesibilidad se validará con personas mayores y usuarios con baja experiencia digital, no sólo mediante revisión técnica.
 10. El sistema deberá tolerar interrupciones y evitar que una pulsación repetida duplique ventas o cobros.
-
-## Aplicación en la interfaz actual
-
-El spike local usa una pantalla principal enfocada en la tarea visible, un estado breve de conexión y una sección desplegable para diagnóstico, notas sintéticas y sincronización. Esta composición es una decisión de presentación del spike; no sustituye validación de tareas reales ni define todavía la navegación completa del POS. Los IDs de tenant, sucursal y dispositivo se mantienen en configuración y diagnóstico, no como contenido principal para quien opera la caja.
-
-La paleta se concentra en tokens CSS semánticos; los valores de tema de la app pueden sobrescribir acento y fondo desde la configuración pública del dispositivo. Componentes y estados deben consumir tokens, no repetir colores sueltos.
+11. Cada pantalla tendrá una acción principal identificable, títulos y etiquetas consistentes y agrupaciones que sigan la tarea del usuario.
+12. Se evitarán adornos, mensajes y controles simultáneos que no ayuden a completar la tarea; las opciones avanzadas se abrirán desde un lugar reconocible.
+13. La simplicidad visual no reducirá legibilidad, contraste, tamaño de controles ni visibilidad de precio, total, medio de pago, estado de venta y mensajes de error.

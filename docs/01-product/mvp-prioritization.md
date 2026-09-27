@@ -3,6 +3,8 @@
 - Estado: **Propuesta para aprobación de línea base**
 - Fecha: 2026-09-20
 
+La solicitud del fundador del 2026-09-27 para una primera entrega interna más amplia en una computadora Windows está documentada en `mvp-scope.md`. Esta tabla conserva la priorización anterior hasta revisar y aprobar la nueva línea base; no debe interpretarse como la priorización final de esa entrega.
+
 Esta tabla convierte la visión amplia en una primera entrega comprobable. Al aprobarse, deben actualizarse las prioridades dentro de cada requisito funcional para evitar dos fuentes contradictorias.
 
 ## Leyenda

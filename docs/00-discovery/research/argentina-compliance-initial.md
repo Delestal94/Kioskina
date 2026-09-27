@@ -81,3 +81,4 @@ Antes de usar Kioskina en ventas reales se necesita, como mínimo:
 6. validar requisitos provinciales/municipales aplicables.
 
 La investigación sirve para diseñar y preparar preguntas. No sustituye la revisión de un profesional matriculado que conozca la situación concreta del comercio.
+

@@ -4,6 +4,12 @@
 - Fecha: 2026-09-20
 - Relacionado: ADR-0003, RN-001 a RN-027
 
+## Implementación de la primera entrega interna (2026-09-27)
+
+ADR-0004 autoriza una sola caja con datos ficticios. La implementación actual (`src/domain.ts`, `src/storage.ts`) conserva el estado del comercio en un registro versionado de IndexedDB. Cada comando lee, valida y escribe ese registro en una transacción `readwrite`; si el comando falla, la transacción se aborta. Ventas, cobros, turnos, movimientos de stock/deuda/caja y auditoría se guardan como registros identificados en ese mismo estado. Los saldos se derivan de movimientos. El comando de venta usa clave de idempotencia y detecta reutilización con otros datos.
+
+La exportación JSON incluye el estado versionado; una restauración valida estructura, referencias e importes antes de reemplazarlo. No hay outbox, coordinador ni garantía de convergencia entre navegadores. La arquitectura de eventos replicables descrita abajo permanece como objetivo condicionado al spike de dos cajas. Las copias locales de Chrome y Edge son distintas. IndexedDB y una exportación manual no sustituyen un respaldo externo automático ni garantizan durabilidad ante pérdida física o fallo de energía.
+
 ## Convenciones obligatorias
 
 - Identificadores generados offline: UUIDv7 o equivalente ordenable, sin coordinación central.
@@ -58,8 +64,6 @@ Todo evento operativo replicable debe incluir como mínimo:
 
 El coordinador agrega su fecha de recepción y resultado de validación; no reescribe el contenido comercial original. `device_sequence` detecta huecos por dispositivo, pero no pretende crear un reloj global.
 
-En el spike, cada nodo compara las secuencias locales conocidas por dispositivo dentro de su tenant/sucursal y señala huecos o números repetidos; no declara convergencia mientras persista una anomalía. Este control no recupera eventos por sí solo: el emisor debe reenviar el faltante, y la detección automática de esa solicitud queda pendiente.
-
 ## Transacción de venta
 
 Una confirmación local válida produce en una única transacción:
@@ -84,14 +88,3 @@ Un reintento con la misma clave devuelve el resultado previo. Una venta anulada 
 ## Proyecciones
 
 Stock actual, saldo de fiado, total de turno e informes son proyecciones derivadas. Deben poder reconstruirse desde movimientos/eventos y comprobarse contra ellos. Se pueden compactar datos técnicos sólo cuando la política de retención, exportación y auditoría lo permita.
-
-## Exportación técnica del spike
-
-- El intercambio entre motores usa NDJSON UTF-8: un sobre de evento canónico por línea, sin `_rev`, estado de entrega ni metadatos propios de CouchDB/PouchDB.
-- La utilidad del spike requiere acceso local a credenciales de coordinador, un tenant sintético explícito y un archivo de salida nuevo; no forma parte de la interfaz del dueño ni satisface RF-052. Las pruebas deben mantener aislado el tenant exportado y revisar el manejo del archivo parcial ante errores. El modo `0600` se solicita al SO, pero el nivel real de protección depende de sus ACL y del sistema de archivos.
-- La lectura se pagina y el archivo se publica al destino sólo cuando termina la exportación. El spike no crea una instantánea consistente frente a escrituras concurrentes: detener los escritores durante la extracción.
-
-## Evento de venta sintética del spike
-
-- `spike.cash-sale-recorded.v1` conserva una línea sintética, moneda, cantidad entera, precio en unidad mínima, total, efectivo recibido y vuelto. El snapshot se valida con aritmética entera y se guarda como un documento/outbox para medir una escritura individual durable e idempotente.
-- Este evento experimental no reemplaza el modelo de transacción de venta de producto descrito arriba: no crea eventos separados de pago, caja, inventario, auditoría ni proyecciones, y no sirve como contrato de producción. La línea base debe decidir su representación y validar atomicidad de todos esos efectos antes de promover código.

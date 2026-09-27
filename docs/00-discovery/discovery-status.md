@@ -1,9 +1,19 @@
 # Estado del descubrimiento
 
-- Estado: **En curso**
-- Línea base aprobada: **No**
-- Implementación autorizada: **No**
-- Última actualización: 2026-09-26
+- Estado: **Línea base de entrega interna aprobada; descubrimiento comercial en curso**
+- Línea base aprobada: **Sí, sólo para la primera entrega interna con datos ficticios**
+- Implementación autorizada: **Sí, dentro de esa línea base interna**
+- Última actualización: 2026-09-27
+
+## Revisión solicitada el 2026-09-27
+
+El fundador pidió ampliar el MVP a «todas las funcionalidades que puedas», comenzar en una computadora Windows y diseñar el producto de forma general para drugstores, sin seleccionar un comercio piloto concreto. También indicó que no contará con un referente contable/legal. El 2026-09-27 confirmó que la primera entrega se probará internamente con datos ficticios en Chrome y Edge. La versión de Windows y las versiones de navegador siguen pendientes. Estas indicaciones iniciales no definían por sí solas una lista verificable de funciones; la propuesta concreta se registró en `../01-product/mvp-scope.md` y la autorización posterior consta abajo. Los bloqueantes fiscales y de privacidad siguen aplicando a un futuro piloto con ventas o datos reales.
+
+## Aprobación de desarrollo interno (2026-09-27)
+
+Ante la instrucción expresa del fundador «deja todo aprobado empecemos con el desarrollo del programa final», se aprueba la línea base **limitada a la primera entrega interna con datos ficticios** descrita en `../01-product/mvp-scope.md`. La revisión colectiva de los tres fundadores prevista para el piloto comercial no consta y permanece pendiente; esta autorización específica de desarrollo interno sustituye esa puerta sólo en el alcance sintético. Ningún requisito fiscal, integración, compatibilidad de hardware, prueba técnica o aprobación de un tercero se declara validado por esta decisión. Se autoriza implementar y probar en el equipo Windows de referencia con Chrome y Edge. El paso a datos/ventas reales exige una puerta separada. ADR-0004 documenta el orden de desarrollo de una caja y futura sincronización.
+
+La implementación local inicial y 12 pruebas automatizadas están disponibles. La verificación manual en Chrome/Edge, recuperación real, alcance pendiente y aprobación de cualquier piloto comercial continúan abiertos.
 
 ## Avance
 
@@ -14,7 +24,7 @@
 - Bloque E — clientes, fidelización y canales: **Respondido parcialmente; requisitos en borrador y aspectos de privacidad pendientes**
 - Bloque F — organización, administración y analítica: **Respondido parcialmente; requisitos en borrador y prioridades pendientes**
 - Bloque G — seguridad, auditoría, privacidad y cumplimiento: **Respondido parcialmente; investigación legal y métricas pendientes**
-- Bloque H — hardware, integraciones y entorno técnico: **Arquitectura candidata documentada; scaffold descartable local-first en curso; inventario/modelos/versiones de equipos pendientes**
+- Bloque H — hardware, integraciones y entorno técnico: **Arquitectura candidata documentada; el equipo confirma disponer de equipos, pero inventario/modelos/versiones no documentados; spike pendiente**
 - Bloque I — escala, calidad y operación: **Objetivos candidatos de recuperación ratificados para la línea base el 2026-09-26; validación técnica, SLA y matriz web pendientes**
 - Bloque J — migración, lanzamiento y evolución: **Respondido parcialmente; métricas y alcance final pendientes**
 
@@ -43,7 +53,7 @@
 
 ## Próximo paso
 
-Completar y evaluar el spike de sincronización descrito en ADR-0001 a ADR-0003. Luego cerrar los bloqueantes fiscales, de recuperación y de hardware antes de aprobar la línea base.
+Revisar la arquitectura detallada y ejecutar el spike de sincronización descrito en ADR-0001 a ADR-0003. Luego cerrar los bloqueantes fiscales, de recuperación y de hardware antes de aprobar la línea base.
 
 ## Decisiones ya registradas
 
@@ -52,3 +62,8 @@ Las decisiones cerradas de alcance, operación sin conexión y conflicto de prec
 ## Decisión sobre investigación de campo
 
 El 2026-09-20 el fundador decidió continuar sin entrevistar ni observar usuarios del comercio piloto. Esto no convierte las hipótesis de usabilidad, tiempos, roles ni procesos en hechos validados. La decisión puede revisarse más adelante sin bloquear el trabajo técnico actual.
+
+
+
+
+

@@ -32,3 +32,4 @@
 | RN-026 | El precio puede divergir temporalmente por caja durante una desconexión; al reconectar un administrador elige el precio futuro compartido y las ventas históricas conservan lo cobrado. | Entrevistas 10 y aprobación posterior | Confirmada por fundador |
 | RN-027 | La configuración de retención no puede reducir mínimos legales o contractuales. | Entrevista 10 e investigación oficial | Confirmada por fundador |
 | RN-028 | Los roles iniciales acumulables son dueño/administrador, encargado y cajero. Se aplican los permisos iniciales aprobados para el MVP; toda acción no concedida explícitamente se deniega por defecto. | Ratificación del fundador, 2026-09-26 | Confirmada para la línea base propuesta; la línea base general sigue pendiente |
+

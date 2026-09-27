@@ -54,3 +54,4 @@ No se recomienda comercializar desde el inicio “local, nube y todos los híbri
 ## Validación antes de fijar precios
 
 Calcular costo mensual por comercio de infraestructura, respaldo, mensajería, soporte, impuestos, garantía y medios de cobro. Definir margen y capacidad del equipo de tres. Probar disposición a pagar con los primeros clientes; no copiar precios de competidores sin comparar alcance y soporte.
+
