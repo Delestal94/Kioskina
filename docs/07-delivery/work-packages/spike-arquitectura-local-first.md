@@ -65,24 +65,24 @@ Retirar el riesgo técnico de la arquitectura local-first candidata: comprobar q
 | ID | Nivel | Caso | Resultado |
 |---|---|---|---|
 | T-SYNC-001 | Sincronización | Dos nodos, partición de 24 h, 1.000 ventas/2.000 productos | Pendiente |
-| T-SYNC-002 | Propiedades/contrato | Reintento, replay, duplicados, fuera de orden, huecos y validación de recibos (T-SYNC-004) | Pendiente |
+| T-SYNC-002 | Propiedades/contrato | Reintento, replay, duplicados, fuera de orden, huecos y validación de recibos (T-SYNC-004) | Parcial: reintento tras escritura parcial, rechazo futuro y detección/reparación de hueco aprobados con PouchDB/fake-indexeddb; recibos inconsistentes y CouchDB real pendientes |
 | T-SYNC-003 | Conflicto | Precios concurrentes y resolución administrativa | Pendiente |
 | T-SYNC-004 | Contrato | Recibos completos, sin IDs extras ni repetidos; lote fuera de alcance rechazado | Pendiente |
-| T-SYNC-005 | Sincronización/recuperación | Dos nodos reciben cambios paginados; repetir una página o interrumpir su aplicación no duplica eventos ni avanza el cursor antes de completar | Pendiente |
-| T-SYNC-006 | Integridad de secuencia | Eventos sintéticos con huecos o secuencias repetidas por dispositivo generan una anomalía visible; al recibir el evento faltante, desaparece el hueco | Pendiente |
-| T-CONFIG-002 | Seguridad/contrato | Cuerpo mayor que `SYNC_MAX_REQUEST_BYTES` se rechaza sin persistir eventos; un cuerpo bajo el límite puede continuar por validación normal | Pendiente |
-| T-STORAGE-001 | Persistencia | Outbox mayor a una página con lectura paginada y secuencia preservada | Pendiente |
-| T-EXPORT-TECH-001 | Portabilidad | Exportación NDJSON de un tenant sintético sin `_rev` ni documentos de otro tenant | Pendiente |
+| T-SYNC-005 | Sincronización/recuperación | Dos nodos reciben cambios paginados; repetir una página o interrumpir su aplicación no duplica eventos ni avanza el cursor antes de completar | Aprobada con PouchDB/fake-indexeddb y coordinador en memoria; CouchDB real pendiente |
+| T-SYNC-006 | Integridad de secuencia | Eventos sintéticos con huecos o secuencias repetidas por dispositivo generan una anomalía visible; al recibir el evento faltante, desaparece el hueco | Parcial: detección y reparación de huecos aprobadas; duplicados locales por dispositivo pendientes |
+| T-CONFIG-002 | Seguridad/contrato | Cuerpo mayor que `SYNC_MAX_REQUEST_BYTES` se rechaza sin persistir eventos; un cuerpo bajo el límite puede continuar por validación normal | Aprobada mediante prueba Fastify inyectada con coordinador en memoria; CouchDB real pendiente |
+| T-STORAGE-001 | Persistencia | Outbox mayor a una página con lectura paginada y secuencia preservada | Aprobada con fixture de 13 eventos y tamaño de página 2; rendimiento a escala objetivo pendiente |
+| T-EXPORT-TECH-001 | Portabilidad | Exportación NDJSON de un tenant sintético sin `_rev` ni documentos de otro tenant | Aprobada con dobles HTTP; CouchDB real pendiente |
 | T-SALE-002 | Integración local | Cierre forzado alrededor de escrituras atómicas | Pendiente |
 | T-STOCK-001 | Propiedades | Ventas concurrentes, ajuste compensatorio y reconstrucción | Pendiente |
 | T-TENANT-001 | Seguridad | Intentos cruzados entre dos tenants mediante gateway | Pendiente |
-| T-PWA-001 | Navegador | Apertura del shell instalado en modo offline después de una primera carga online | Pendiente |
+| T-PWA-001 | Navegador | Apertura del shell instalado en modo offline después de una primera carga online | Aprobada en `internal-preview-build.md`: la interfaz actual se recargó sin el servidor; shell v2 actualiza caché al volver online |
 | T-MIG-001 | Migración | Actualización con outbox pendiente y reversión | Pendiente |
 | T-REC-001 | Recuperación | Pérdida de nodo durante sincronización y reingreso controlado | Pendiente |
 
 ## Evidencia y documentación
 
-- Comandos/resultados: scaffold creado; validación de build, tipos, persistencia y sincronización aún pendiente. No se afirma que los criterios de spike estén demostrados.
+- Comandos/resultados: `sync-reliability.md` conserva evidencia de 13 pruebas sintéticas y builds/tipos aprobados al 2026-09-27; pruebas con CouchDB real, dos equipos, partición de 24 h, conflicto de precio, migración y escala comercial siguen pendientes. El shell offline se verificó además en navegador local según `internal-preview-build.md`.
 - Documentos actualizados al terminar: ADR-0001 a ADR-0003; arquitectura-overview, data-model, security-model, test-strategy, deployment-recovery-support, traceability y discovery-status, según resultados.
 - Riesgos o preguntas restantes: Q-005, Q-009, Q-030, Q-031, Q-033, Q-035, Q-036, Q-037, Q-047 y Q-048 permanecen según el estado registrado; el spike no los resuelve automáticamente.
 - Puerta: no convertir código del spike en producto ni iniciar el MVP hasta que discovery-status indique línea base aprobada e implementación autorizada.

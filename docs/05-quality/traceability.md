@@ -39,7 +39,7 @@
 | Resistir fallas, reintentos y cortes | RF-056, RF-057 | RN-023; RNF-004, RNF-006; ADR-0003 | No iniciada | T-SALE-002, T-SYNC-001/002, T-MIG-001 | Spike pendiente |
 | Ofrecer hardware y soporte | RF-058, RF-059 | Pendiente | No iniciada | Piloto operativo por definir | Por validar |
 | Aislar datos entre comercios | RF-036, RF-038 | RNF-002, RNF-003 | No iniciada | Pruebas negativas de seguridad por definir | Borrador |
-| Aplicación web instalable y compatible | RF-060 | RNF-010 | Scaffold del spike con manifiesto/runtime; compatibilidad pendiente | T-PWA-001; matriz web/dispositivos por definir | Borrador |
+| Aplicación web instalable y compatible | RF-060 | RNF-010 | Scaffold del spike con manifiesto/runtime y shell cacheado | T-PWA-001 aprobado en navegador local; matriz web/dispositivos por definir | Borrador; compatibilidad Windows/Android pendiente |
 | Migración y configuración en 4–8 horas | RF-061, RF-062 | Pendiente | No iniciada | Ensayo con datos del piloto por definir | Borrador |
 | Ayuda y prueba comercial por plan | RF-063, RF-064, RF-069 | Pendiente | No iniciada | Prueba de onboarding y vencimiento por definir | Borrador |
 | Actualizar y revertir con seguridad | RF-065 | RNF-011; plan de despliegue | No iniciada | T-MIG-001 y rollback operativo | Borrador |
@@ -50,7 +50,7 @@
 | Informar y respetar derechos sobre datos | RF-071, RF-072, RF-074 | RNF-002, RNF-003 | No iniciada | Revisión legal y pruebas de solicitudes por definir | Borrador |
 | Conservar/eliminar según categoría y obligación | RF-073 | RN-021, RNF-001, RNF-005 | No iniciada | Pruebas de políticas y bloqueos por definir | Borrador |
 | Controlar campañas futuras | RF-075 | Pendiente | No iniciada | Consentimiento/baja/No Llame por definir | Posterior al MVP |
-| Operar local-first en dos cajas sincronizadas | RF-013, RF-057, RF-060 | RN-023 a RN-026; ADR-0001 a ADR-0003; RNF-004 a RNF-006, RNF-013 a RNF-015 | Spike: outbox, push/pull incremental, cursor acotado por scope y detección local de secuencias; no producción | T-SYNC-001 a T-SYNC-007 | Siete pruebas sintéticas aprobadas; coordinador real, navegador, ventas y objetivo de 24 h pendientes |
+| Operar local-first en dos cajas sincronizadas | RF-013, RF-057, RF-060 | RN-023 a RN-026; ADR-0001 a ADR-0003; RNF-004 a RNF-006, RNF-013 a RNF-015 | Spike: outbox, push/pull incremental, cursor acotado por scope y detección local de secuencias; no producción | T-SYNC-001 a T-SYNC-007 | 13 pruebas sintéticas del paquete aprobadas con dobles; contrato de recibos, CouchDB real, dos equipos y objetivo de 24 h pendientes |
 | Recuperar servicio y datos después de fallas | RF-052, RF-053, RF-056 | RNF-005, RNF-011; Q-048; plan operativo | No iniciada | T-REC-001, T-BACKUP-001, T-MIG-001 | Objetivos candidatos ratificados el 2026-09-26; spike y simulacro pendientes |
 | Continuar sin investigación de campo previa | No aplica | RISK-022 | Telemetría/iteración no iniciada | Métricas del piloto | Riesgo aceptado |
 | Despliegues configurables sin datos comerciales en código | RNF-016 | ADR-0002 (candidato) | Spike: `apps/client/src/config.ts`, configuración runtime y variables de entorno; gateway limita bytes por solicitud desde entorno | T-CONFIG-001, T-CONFIG-002 | En curso; spike descartable |
