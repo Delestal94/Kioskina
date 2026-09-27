@@ -16,3 +16,5 @@
 ## Aplicación en la interfaz actual
 
 El spike local usa una pantalla principal enfocada en la tarea visible, un estado breve de conexión y una sección desplegable para diagnóstico, notas sintéticas y sincronización. Esta composición es una decisión de presentación del spike; no sustituye validación de tareas reales ni define todavía la navegación completa del POS. Los IDs de tenant, sucursal y dispositivo se mantienen en configuración y diagnóstico, no como contenido principal para quien opera la caja.
+
+La paleta se concentra en tokens CSS semánticos; los valores de tema de la app pueden sobrescribir acento y fondo desde la configuración pública del dispositivo. Componentes y estados deben consumir tokens, no repetir colores sueltos.

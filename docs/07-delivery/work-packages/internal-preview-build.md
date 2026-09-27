@@ -24,6 +24,7 @@ Generar un build estático reproducible de la interfaz actual y revisarlo localm
 4. Con el Service Worker instalado, la interfaz vuelve a cargar desde caché cuando el servidor de vista previa no está disponible; la app muestra el coordinador como no disponible.
 5. La documentación declara explícitamente que el artefacto sigue siendo un spike y no una release del POS.
 6. La vista principal prioriza una tarea, reduce el estado técnico a una franja compacta y oculta las herramientas de spike en una sección desplegable; los controles siguen etiquetados y utilizables en móvil y escritorio.
+7. Colores de componentes y estados consumen tokens semánticos centralizados; los valores de tema inyectados por runtime conservan la personalización prevista.
 
 ## Matriz de comportamiento
 
@@ -49,6 +50,7 @@ Generar un build estático reproducible de la interfaz actual y revisarlo localm
 | T-PWA-001 | Manual/browser | Confirmar que el Service Worker controla la página, apagar preview y recargar | Primer intento falló: tras detener el preview, la recarga quedó en blanco. No se verificó el estado `controller` antes de cortar el servidor; repetir con esa precondición explícita |
 | T-CONFIG-001 | Build/config | Validar configuración y ausencia de secretos del gateway | Build generado; runtime sintético inspeccionado, sin credenciales de gateway |
 | T-UX-001 | Manual/browser | Revisar la jerarquía, estados comprensibles, formulario de venta y disclosure de herramientas en escritorio y ventana móvil | Escritorio: revisado visualmente y árbol accesible confirmado; móvil: breakpoint de una columna inspeccionado en CSS, prueba real pendiente |
+| T-THEME-001 | Inspección/build | Verificar que los colores de componentes usan tokens semánticos y que Vite genera el build con el tema | Build aprobado; valores cromáticos concentrados en tokens `:root`, componentes referencian variables; runtime config sintético inspeccionado |
 
 ## Evidencia y documentación
 
